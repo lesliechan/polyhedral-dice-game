@@ -21,15 +21,16 @@
             overflow: hidden; /* Prevent scrollbars from animation clones */
         }
 
-       .game-container {
+        .game-container {
             background-color: #34495e;
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            max-width: 900px;
-            width: 100%;
+            max-width: 900px; /* Maximum width for larger screens */
+            width: 100%; /* Allows it to shrink on smaller screens */
             position: relative; /* For absolutely positioned elements like animation clones */
+            box-sizing: border-box; /* Include padding in width */
         }
 
         h1 {
@@ -38,56 +39,57 @@
             font-size: 2.5em;
         }
 
-       .players-area {
+        .players-area {
             display: flex;
             justify-content: space-around;
             margin-bottom: 30px;
-            flex-wrap: wrap;
+            flex-wrap: wrap; /* Allows panels to wrap to next line */
             gap: 20px;
         }
 
-       .player-panel {
+        .player-panel {
             background-color: #2980b9;
             border-radius: 8px;
             padding: 15px;
-            width: 48%;
-            min-width: 350px;
+            width: 48%; /* Takes up almost half width on larger screens */
+            min-width: 350px; /* This was the culprit for small screens, will override in media query */
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
             transition: background-color 0.3s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center; /* Center content vertically */
-            position: relative; /* For proper positioning contexts of dice */
+            justify-content: center;
+            position: relative;
+            box-sizing: border-box; /* Include padding in width */
         }
 
-       .player-panel.player--active {
+        .player-panel.player--active {
             background-color: #e67e22;
             box-shadow: 0 0 15px rgba(241, 196, 15, 0.7);
         }
 
-       .player-panel h2 {
+        .player-panel h2 {
             margin-top: 0;
             color: #ecf0f1;
             font-size: 1.8em;
         }
 
-       .dice-pool-label {
+        .dice-pool-label {
             font-size: 1.1em;
             color: #bdc3c7;
             margin-top: 10px;
             margin-bottom: 5px;
         }
 
-       .dice-pool {
+        .dice-pool {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 10px;
-            min-height: 80px; /* Ensure space even if no dice */
+            min-height: 80px;
         }
 
-       .die-item {
+        .die-item {
             position: relative;
             width: 60px;
             height: 60px;
@@ -104,39 +106,37 @@
             cursor: pointer;
             transition: transform 0.1s ease-in-out, border 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
             border: 2px solid transparent;
-            z-index: 1; /* Ensure dice are above general background */
+            z-index: 1;
+            box-sizing: border-box; /* Include border in size calculation */
         }
 
-        /* Enhanced selection highlighting */
-       .die-item.selected-attack {
-            border: 4px solid #f1c40f; /* Thicker yellow */
-            transform: scale(1.08); /* Slightly larger */
-            box-shadow: 0 0 10px rgba(241, 196, 15, 0.7); /* Glow */
+        .die-item.selected-attack {
+            border: 4px solid #f1c40f;
+            transform: scale(1.08);
+            box-shadow: 0 0 10px rgba(241, 196, 15, 0.7);
         }
 
-       .die-item.selected-target {
-            border: 4px solid #e74c3c; /* Thicker red */
+        .die-item.selected-target {
+            border: 4px solid #e74c3c;
             transform: scale(1.08);
             box-shadow: 0 0 10px rgba(231, 76, 60, 0.7);
         }
 
-        /* Bolder text for selected dice values */
-       .die-item.selected-attack .die-value,
-       .die-item.selected-target .die-value {
+        .die-item.selected-attack .die-value,
+        .die-item.selected-target .die-value {
             font-weight: bolder;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Add text shadow for contrast */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
         }
 
-        /* for Mind Attack selectable dice */
-       .die-item.mind-attack-selectable {
-            border: 2px solid #9b59b6; /* Purple for dice active player can add to formula */
+        .die-item.mind-attack-selectable {
+            border: 2px solid #9b59b6;
             box-shadow: 0 0 8px rgba(155, 89, 182, 0.7);
         }
-       .die-item.mind-attack-selectable .die-value {
+        .die-item.mind-attack-selectable .die-value {
              font-weight: bold;
         }
 
-       .die-type {
+        .die-type {
             font-size: 0.7em;
             color: #7f8c8d;
             position: absolute;
@@ -144,31 +144,30 @@
             left: 5px;
         }
 
-        /* UPDATED: Die label position for Mind Attack formula */
-       .die-label {
+        .die-label {
             font-size: 1.1em;
             font-weight: bolder;
-            color: #3498db; /* Blue color for labels */
+            color: #3498db;
             position: absolute;
-            bottom: -10px; /* Position below the die */
-            background-color: #2c3e50; /* Match body background for better contrast */
+            bottom: -10px;
+            background-color: #2c3e50;
             padding: 2px 5px;
             border-radius: 4px;
-            z-index: 10; /* Ensure label is on top */
+            z-index: 10;
         }
 
-       .die-value {
+        .die-value {
             font-size: 1.5em;
         }
 
-       .captured-dice-label {
+        .captured-dice-label {
             font-size: 1.1em;
             color: #bdc3c7;
             margin-top: 15px;
             margin-bottom: 5px;
         }
 
-       .captured-dice-pool {
+        .captured-dice-pool {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -176,7 +175,7 @@
             min-height: 30px;
         }
 
-       .captured-die-item {
+        .captured-die-item {
             width: 30px;
             height: 30px;
             background-color: #27ae60;
@@ -191,7 +190,7 @@
             transition: transform 0.3s ease;
         }
 
-       .controls {
+        .controls {
             margin-top: 30px;
             display: flex;
             flex-wrap: wrap;
@@ -229,14 +228,14 @@
             width: 100%;
         }
 
-        /* Styles for the formula builder */
         #mindAttackDisplay {
             min-height: 40px;
             background-color: #ecf0f1;
             color: #34495e;
             border-radius: 5px;
             padding: 8px 15px;
-            width: 80%;
+            width: 80%; /* Adjusted for responsiveness */
+            max-width: 600px; /* Cap width on large screens */
             text-align: center;
             font-size: 1.2em;
             font-weight: bold;
@@ -246,6 +245,7 @@
             overflow-x: auto;
             white-space: nowrap;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            box-sizing: border-box;
         }
 
         .mind-attack-buttons {
@@ -278,7 +278,7 @@
             background-color: #e74c3c;
         }
 
-       .message {
+        .message {
             font-size: 1.2em;
             font-weight: bold;
             color: #f1c40f;
@@ -286,7 +286,7 @@
             min-height: 30px;
         }
 
-       .game-over-overlay {
+        .game-over-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -303,13 +303,13 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-       .game-over-overlay button {
+        .game-over-overlay button {
             margin-top: 30px;
             font-size: 1.2em;
             padding: 15px 30px;
         }
 
-        /* NEW: Animation CSS */
+        /* NEW: Animation CSS (unchanged from previous) */
         @keyframes rotatePulse {
             0% { transform: rotateY(0deg) scale(1); }
             50% { transform: rotateY(360deg) scale(1.1); }
@@ -321,9 +321,9 @@
         }
 
         .die-capture-animation {
-            position: fixed !important; /* Override current positioning */
+            position: fixed !important;
             animation: captureMove 0.8s ease-in-out forwards;
-            z-index: 999; /* Ensure it's on top of other elements during animation */
+            z-index: 999;
         }
 
         @keyframes captureMove {
@@ -338,6 +338,142 @@
             100% {
                 transform: translate(var(--dx), var(--dy)) scale(0.3);
                 opacity: 0;
+            }
+        }
+
+        /* --- NEW MEDIA QUERIES FOR RESPONSIVENESS --- */
+
+        /* For screens smaller than 800px (e.g., larger tablets in portrait, small laptops) */
+        @media screen and (max-width: 800px) {
+            .game-container {
+                padding: 15px; /* Reduce padding for smaller screens */
+            }
+
+            h1 {
+                font-size: 2.2em; /* Slightly smaller title */
+            }
+
+            .players-area {
+                flex-direction: column; /* Stack player panels vertically */
+                align-items: center; /* Center panels */
+                gap: 15px; /* Reduce gap between stacked panels */
+            }
+
+            .player-panel {
+                width: 95%; /* Take almost full width */
+                min-width: unset; /* IMPORTANT: Remove fixed minimum width */
+                max-width: 450px; /* Optional: Cap max width for better centering on slightly larger "small" screens */
+            }
+
+            .die-item {
+                width: 55px; /* Slightly smaller dice */
+                height: 55px;
+                font-size: 1.1em;
+            }
+
+            .die-label {
+                font-size: 1em; /* Adjust label size */
+                bottom: -8px;
+            }
+
+            .die-type {
+                font-size: 0.65em; /* Adjust type label size */
+            }
+
+            button {
+                padding: 8px 15px; /* Smaller button padding */
+                font-size: 0.95em;
+            }
+
+            .message {
+                font-size: 1.1em;
+            }
+
+            #mindAttackDisplay {
+                width: 90%; /* Ensure display fits well */
+            }
+        }
+
+        /* For screens smaller than 500px (e.g., most smartphones) */
+        @media screen and (max-width: 500px) {
+            .game-container {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .player-panel {
+                padding: 10px;
+                width: 100%; /* Take full width on very small screens */
+            }
+
+            .player-panel h2 {
+                font-size: 1.6em;
+            }
+
+            .dice-pool-label, .captured-dice-label {
+                font-size: 1em;
+            }
+
+            .die-item {
+                width: 48px; /* Make dice even smaller */
+                height: 48px;
+                font-size: 1em;
+            }
+
+            .die-label {
+                font-size: 0.85em; /* Even smaller label */
+                bottom: -6px; /* Adjust position */
+            }
+            .die-type {
+                font-size: 0.55em;
+            }
+
+            .die-value {
+                font-size: 1.3em;
+            }
+
+            .captured-die-item {
+                width: 25px;
+                height: 25px;
+                font-size: 0.7em;
+            }
+
+            .controls button,
+            .mind-attack-buttons .formula-btn,
+            #btnSubmitMindAttack {
+                padding: 7px 12px; /* Even smaller buttons */
+                font-size: 0.85em;
+            }
+
+            .message {
+                font-size: 0.95em;
+            }
+
+            .game-over-overlay {
+                font-size: 1.5em;
+            }
+            .game-over-overlay button {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+        }
+
+        /* Further small adjustments for very narrow screens if needed */
+        @media screen and (max-width: 350px) {
+             .die-item {
+                width: 42px; /* Smallest dice */
+                height: 42px;
+                font-size: 0.9em;
+            }
+            .die-label {
+                font-size: 0.75em;
+                bottom: -5px;
+            }
+             .die-type {
+                font-size: 0.5em;
             }
         }
     </style>
@@ -436,6 +572,8 @@
         const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // For die labels
 
         // --- Sound Effects ---
+        // IMPORTANT: Update 'your-repo-name' with your actual GitHub repository name!
+        // Example: If your repo is 'my-awesome-game', then use '/my-awesome-game/sounds/roll.mp3'
         const sounds = {
             roll: new Audio('/polyhedral-dice-game/sounds/roll.mp3'),
             click: new Audio('/polyhedral-dice-game/sounds/click.mp3'),
@@ -1029,27 +1167,30 @@
                     messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
                     return;
                 }
-                if (isOperator && (lastIsOperator || lastPart === '(')) {
-                    messageEl.textContent = "Invalid sequence: " + lastPart + value + ".";
-                    return;
-                }
-                 if (value === '(' && lastIsLetter) { // e.g. "A("
-                     messageEl.textContent = "Please add an operator before an opening parenthesis after a die label.";
-                     return;
-                }
-                if (value === ')' && lastIsOperator) { // e.g. "+)"
-                    messageEl.textContent = "Cannot close parenthesis immediately after an operator.";
-                    return;
+                if (isFormulaValidSoFar(currentFormulaParts.join('') + value)) { // More robust validation
+                    currentFormulaParts.push(value);
+                } else {
+                     messageEl.textContent = "Invalid formula syntax. Please check operators/parentheses.";
                 }
 
-
-                currentFormulaParts.push(value);
                 renderMindAttackDisplay();
                 const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
                 messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
                 updateUI();
             });
         });
+
+        // Helper function for formula validation
+        function isFormulaValidSoFar(formula) {
+            // Check for common syntax errors without evaluating
+            // This is a simplified check, a full parser is in math.js
+            try {
+                math.parse(formula.replace(/[A-Z]/g, '1')); // Replace labels with numbers for parsing
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }
 
         btnFormulaClear.addEventListener('click', () => {
             if (gamePhase !== 'mindAttackInput') return;
