@@ -21,82 +21,183 @@
             overflow-x: hidden;
         }
 
-        /* UPDATED: Game Header */
+        /* UPDATED: Game Header (now more like a menu bar) */
         .game-header {
             background-color: #34495e;
             border-radius: 10px;
-            padding: 10px 20px; /* Reduced padding */
+            padding: 8px 15px; /* Reduced padding for compact bar */
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
             text-align: center;
             width: 100%;
             max-width: 900px;
-            margin-bottom: 15px; /* Reduced margin */
+            margin-bottom: 15px;
             box-sizing: border-box;
+            display: flex; /* Use flexbox for internal layout */
+            flex-direction: column; /* Stack elements by default */
+            align-items: center;
+            justify-content: space-between;
         }
 
         .game-header h1 {
             color: #f1c40f;
-            margin: 0 0 10px 0; /* Reduced margin */
-            font-size: 2em; /* Smaller font size */
+            margin: 0; /* No margin here */
+            font-size: 1.8em; /* Smaller font size for title */
+            line-height: 1; /* Compact line height */
+        }
+
+        .game-header .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 5px; /* Small margin below title */
         }
 
         .score-container {
             display: flex;
-            justify-content: space-around;
-            gap: 5px; /* Reduced gap */
+            justify-content: center; /* Center scores */
+            gap: 10px;
             flex-wrap: wrap;
+            margin-top: 10px; /* Space below title */
         }
 
         .player-score-panel {
             background-color: #2980b9;
             border-radius: 5px;
-            padding: 6px 12px; /* Reduced padding */
-            font-size: 1.1em; /* Slightly smaller font */
+            padding: 4px 10px; /* Reduced padding */
+            font-size: 1em; /* Smaller font */
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         #player0-score, #player1-score {
             color: #f1c40f;
-            font-size: 1.2em;
+            font-size: 1.1em;
         }
 
-        /* NEW: Layout Controls */
-        .layout-controls {
-            margin-bottom: 15px;
-            font-size: 0.9em;
+        /* NEW: Dice Legend Styles */
+        .dice-legend {
+            margin-top: 10px; /* Space below scores */
             display: flex;
-            gap: 15px;
-            align-items: center;
             flex-wrap: wrap;
             justify-content: center;
+            gap: 8px 15px; /* Row and column gap */
+            font-size: 0.85em;
+            color: #bdc3c7;
         }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color-box {
+            width: 15px;
+            height: 15px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            border: 1px solid rgba(0,0,0,0.1); /* Subtle border */
+        }
+        /* Match legend box colors to dice colors */
+        .legend-color-box.d4 { background-color: #A3E4D7; }
+        .legend-color-box.d6 { background-color: #F9E79F; }
+        .legend-color-box.d8 { background-color: #D2B4DE; }
+        .legend-color-box.d10 { background-color: #F5B7B1; }
+        .legend-color-box.d12 { background-color: #A9CCE3; }
+        .legend-color-box.d20 { background-color: #FADBD8; }
+
+        /* End NEW: Dice Legend */
+
+
+        /* NEW: Layout Controls (Toggle Switch) */
+        .layout-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Gap between "Game Log" text and switch */
+            margin-bottom: 0; /* Remove bottom margin here, will be handled by log-container */
+        }
+
         .layout-controls label {
+            font-size: 1em;
             color: #ecf0f1;
+            margin-right: 0; /* Remove default label margin */
         }
-        .layout-controls input[type="radio"] {
-            margin-right: 5px;
+
+        /* Toggle Switch Styling (standard pattern) */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px; /* Adjusted width for compactness */
+            height: 20px; /* Adjusted height for compactness */
         }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 20px; /* Make it rounded */
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; /* Adjusted size */
+            width: 16px; /* Adjusted size */
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%; /* Make it round */
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3; /* Blue when checked (side) */
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px); /* Move for side */
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+        /* End NEW: Layout Controls */
+
 
         /* NEW: Main Content Wrapper for Layout */
         .main-content-wrapper {
             display: flex;
             flex-direction: column; /* Default: column (log at bottom) */
             width: 100%;
-            max-width: 900px; /* Aligned with game-container's max-width */
+            max-width: 900px;
             align-items: center;
             gap: 20px; /* Space between game and log when stacked */
         }
 
-        /* Side layout specific styles */
+        /* Side layout specific styles (defaulted in JS) */
         .main-content-wrapper.log-side {
             flex-direction: row; /* Change to row for side layout */
             justify-content: center;
             align-items: flex-start; /* Align items to the top */
             max-width: 1200px; /* Wider for side layout */
-            margin-top: 0; /* Adjust margin if needed */
+            gap: 20px; /* Space between game and log when side-by-side */
         }
 
         /* Game container styles */
@@ -106,15 +207,14 @@
             padding: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            width: 100%; /* Default width for column layout */
+            width: 100%;
             max-width: 900px;
             position: relative;
             box-sizing: border-box;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
         }
         .main-content-wrapper.log-side .game-container {
             width: 65%; /* Allocate space for game board */
-            max-width: 900px; /* Keep consistent max width for game board */
             margin-bottom: 0; /* No bottom margin when side by side */
         }
 
@@ -124,44 +224,44 @@
             border-radius: 10px;
             padding: 15px 20px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-            width: 100%; /* Default width for column layout */
+            width: 100%;
             max-width: 900px;
             box-sizing: border-box;
-            flex-shrink: 0; /* Prevent shrinking */
+            flex-shrink: 0;
             max-height: 200px; /* Default max-height for bottom log */
         }
         .main-content-wrapper.log-side .game-log-container {
             width: 35%; /* Allocate space for log */
-            max-width: 350px; /* Max width for log when on side */
-            min-width: 250px; /* Ensure log is not too narrow */
+            max-width: 350px;
+            min-width: 250px;
             max-height: 700px; /* Allow more height for log on side */
-            margin-top: 0; /* No top margin when side by side */
+            margin-top: 0;
         }
         .game-log-container h3 {
             color: #ecf0f1;
             margin-top: 0;
             margin-bottom: 10px;
             font-size: 1.5em;
+            display: flex; /* For log title and toggle switch */
+            justify-content: space-between;
+            align-items: center;
         }
 
         #game-log {
             background-color: #2c3e50;
             border-radius: 5px;
             padding: 10px;
-            max-height: 100%; /* Take full height of container */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 100%;
+            overflow-y: auto;
             border: 1px solid #4a627a;
             color: #bdc3c7;
-            font-size: 0.9em; /* Default font size for bottom log */
+            font-size: 0.9em;
             line-height: 1.4;
             text-align: left;
         }
-        /* Smaller text for side log */
         .main-content-wrapper.log-side #game-log {
             font-size: 0.8em;
         }
-
-        /* END NEW: Layout */
 
         .players-area {
             display: flex;
@@ -217,8 +317,6 @@
             position: relative;
             width: 60px;
             height: 60px;
-            /* Default background, will be overridden by type-specific class */
-            background-color: #ecf0f1;
             border-radius: 8px;
             display: flex;
             flex-direction: column;
@@ -226,7 +324,7 @@
             justify-content: center;
             font-size: 1.2em;
             font-weight: bold;
-            color: #34495e; /* Default text color for light backgrounds */
+            color: #34495e;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: transform 0.1s ease-in-out, border 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
@@ -235,7 +333,7 @@
             box-sizing: border-box;
         }
 
-        /* NEW: Dice Colors */
+        /* Dice Colors */
         .die-item.d4 { background-color: #A3E4D7; } /* Light Teal */
         .die-item.d6 { background-color: #F9E79F; } /* Light Yellow */
         .die-item.d8 { background-color: #D2B4DE; } /* Light Purple */
@@ -244,14 +342,21 @@
         .die-item.d20 { background-color: #FADBD8; } /* Light Pink */
 
         /* Ensure text is dark on light backgrounds */
-        .die-item.d4 .die-value, .die-item.d4 .die-type, .die-item.d4 .die-label,
-        .die-item.d6 .die-value, .die-item.d6 .die-type, .die-item.d6 .die-label,
-        .die-item.d8 .die-value, .die-item.d8 .die-type, .die-item.d8 .die-label,
-        .die-item.d10 .die-value, .die-item.d10 .die-type, .die-item.d10 .die-label,
-        .die-item.d12 .die-value, .die-item.d12 .die-type, .die-item.d12 .die-label,
-        .die-item.d20 .die-value, .die-item.d20 .die-type, .die-item.d20 .die-label {
+        .die-item.d4 .die-value, .die-item.d4 .die-type,
+        .die-item.d6 .die-value, .die-item.d6 .die-type,
+        .die-item.d8 .die-value, .die-item.d8 .die-type,
+        .die-item.d10 .die-value, .die-item.d10 .die-type,
+        .die-item.d12 .die-value, .die-item.d12 .die-type,
+        .die-item.d20 .die-value, .die-item.d20 .die-type {
             color: #34495e; /* Dark text for all light backgrounds */
         }
+
+        /* UPDATED: Die label color for better visibility */
+        .die-item .die-label {
+            color: #ffffff; /* White color for labels */
+        }
+
+
         /* Selected/highlighted states */
         .die-item.selected-attack {
             border: 4px solid #f1c40f;
@@ -281,16 +386,14 @@
 
         .die-type {
             font-size: 0.7em;
-            color: #7f8c8d; /* Original color might be too light on some backgrounds, adjust if needed */
             position: absolute;
             top: 5px;
             left: 5px;
         }
 
         .die-label {
-            font-size: 1.1em;
+            font-size: 1.0em; /* Slightly smaller font size */
             font-weight: bolder;
-            color: #3498db; /* Original color might be too light on some backgrounds, adjust if needed */
             position: absolute;
             bottom: -10px;
             background-color: #2c3e50;
@@ -333,6 +436,7 @@
             transition: transform 0.3s ease;
         }
 
+        /* REARRANGED: Controls for attack actions */
         .controls {
             margin-top: 30px;
             display: flex;
@@ -442,19 +546,17 @@
         .log-entry.win { color: #2ecc71; font-weight: bold; }
         .log-entry.error { color: #e74c3c; font-weight: bold; }
 
-        /* Style for numeric formula parts in log */
         .log-entry .formula-part {
             padding: 1px 3px;
             border-radius: 2px;
-            display: inline-block; /* Allows padding and background */
+            display: inline-block;
             font-weight: bold;
             box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-            margin: 0 1px; /* Small space between parts */
-            white-space: nowrap; /* Keep parts together */
+            margin: 0 1px;
+            white-space: nowrap;
         }
         .log-entry .formula-part span {
-            /* To ensure consistency with the direct text parts */
-            color: inherit;
+            color: inherit; /* Ensure inner spans inherit color */
         }
 
         .game-over-overlay {
@@ -480,7 +582,6 @@
             padding: 15px 30px;
         }
 
-        /* Animation CSS (unchanged from previous) */
         @keyframes rotatePulse {
             0% { transform: rotateY(0deg) scale(1); }
             50% { transform: rotateY(360deg) scale(1.1); }
@@ -542,46 +643,51 @@
             }
 
             .game-header h1 {
-                font-size: 1.8em; /* Further smaller title */
+                font-size: 1.6em; /* Further smaller title */
+            }
+
+            .game-header .header-controls {
+                flex-direction: column; /* Stack New Game and Score on small screens */
+                gap: 10px;
             }
 
             .player-score-panel {
-                font-size: 1.0em;
+                font-size: 0.9em;
             }
 
             #player0-score, #player1-score {
-                font-size: 1.1em;
+                font-size: 1.0em;
             }
 
             .players-area {
-                flex-direction: column; /* Stack player panels vertically */
-                align-items: center; /* Center panels */
-                gap: 15px; /* Reduce gap between stacked panels */
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
             }
 
             .player-panel {
-                width: 95%; /* Take almost full width */
-                min-width: unset; /* IMPORTANT: Remove fixed minimum width */
-                max-width: 450px; /* Optional: Cap max width for better centering on slightly larger "small" screens */
+                width: 95%;
+                min-width: unset;
+                max-width: 450px;
             }
 
             .die-item {
-                width: 55px; /* Slightly smaller dice */
+                width: 55px;
                 height: 55px;
                 font-size: 1.1em;
             }
 
             .die-label {
-                font-size: 1em; /* Adjust label size */
+                font-size: 0.9em;
                 bottom: -8px;
             }
 
             .die-type {
-                font-size: 0.65em; /* Adjust type label size */
+                font-size: 0.65em;
             }
 
             button {
-                padding: 8px 15px; /* Smaller button padding */
+                padding: 8px 15px;
                 font-size: 0.95em;
             }
 
@@ -590,16 +696,25 @@
             }
             
             #game-log {
-                max-height: 150px; /* Reduce log height on smaller screens */
+                max-height: 150px;
                 font-size: 0.85em;
             }
 
-            .main-content-wrapper { /* Ensure consistency when stacked */
+            .main-content-wrapper {
                 max-width: 800px;
             }
 
             #mindAttackDisplay {
-                width: 90%; /* Ensure display fits well */
+                width: 90%;
+            }
+
+            .dice-legend {
+                font-size: 0.75em; /* Smaller legend on smaller screens */
+                gap: 5px 10px;
+            }
+            .legend-color-box {
+                width: 12px;
+                height: 12px;
             }
         }
 
@@ -610,51 +725,52 @@
             }
 
             .game-header h1 {
-                font-size: 1.6em;
+                font-size: 1.4em;
             }
 
             .player-score-panel {
-                font-size: 0.9em;
-                padding: 5px 8px;
+                font-size: 0.8em;
+                padding: 4px 6px;
             }
 
             #player0-score, #player1-score {
-                font-size: 1.0em;
+                font-size: 0.9em;
             }
 
             .game-header .score-container {
-                flex-direction: column; /* Stack scores vertically on very small screens */
+                flex-direction: column;
+                gap: 5px;
             }
 
             .player-panel {
                 padding: 10px;
-                width: 100%; /* Take full width on very small screens */
+                width: 100%;
             }
 
             .player-panel h2 {
-                font-size: 1.6em;
+                font-size: 1.4em;
             }
 
             .dice-pool-label, .captured-dice-label {
-                font-size: 1em;
+                font-size: 0.9em;
             }
 
             .die-item {
-                width: 48px; /* Make dice even smaller */
+                width: 48px;
                 height: 48px;
                 font-size: 1em;
             }
 
             .die-label {
-                font-size: 0.85em; /* Even smaller label */
-                bottom: -6px; /* Adjust position */
+                font-size: 0.8em;
+                bottom: -6px;
             }
             .die-type {
-                font-size: 0.55em;
+                font-size: 0.5em;
             }
 
             .die-value {
-                font-size: 1.3em;
+                font-size: 1.2em;
             }
 
             .captured-die-item {
@@ -666,7 +782,7 @@
             .controls button,
             .mind-attack-buttons .formula-btn,
             #btnSubmitMindAttack {
-                padding: 7px 12px; /* Even smaller buttons */
+                padding: 7px 12px;
                 font-size: 0.85em;
             }
 
@@ -675,57 +791,74 @@
             }
 
             #game-log {
-                max-height: 120px; /* Further reduce log height */
+                max-height: 120px;
                 font-size: 0.8em;
             }
 
             .game-over-overlay {
-                font-size: 1.5em;
+                font-size: 1.2em;
             }
             .game-over-overlay button {
-                font-size: 1em;
+                font-size: 0.9em;
                 padding: 10px 20px;
+            }
+            .dice-legend {
+                font-size: 0.7em;
+            }
+            .legend-color-box {
+                width: 10px;
+                height: 10px;
             }
         }
 
         /* Further small adjustments for very narrow screens if needed */
         @media screen and (max-width: 350px) {
              .die-item {
-                width: 42px; /* Smallest dice */
+                width: 42px;
                 height: 42px;
                 font-size: 0.9em;
             }
             .die-label {
-                font-size: 0.75em;
+                font-size: 0.7em;
                 bottom: -5px;
             }
              .die-type {
-                font-size: 0.5em;
+                font-size: 0.45em;
+            }
+             .player-panel h2 {
+                font-size: 1.2em;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Game Header (Menu Bar) -->
     <div class="game-header">
         <h1>Polyhedral Dice Game</h1>
-        <div class="score-container">
-            <div class="player-score-panel player--0-score">
-                Player 1: <span id="player0-score">0</span>
-            </div>
-            <div class="player-score-panel player--1-score">
-                Player 2: <span id="player1-score">0</span>
+        <div class="header-controls">
+            <button id="btnNewGame">New Game</button>
+            <div class="score-container">
+                <div class="player-score-panel player--0-score">
+                    Player 1: <span id="player0-score">0</span>
+                </div>
+                <div class="player-score-panel player--1-score">
+                    Player 2: <span id="player1-score">0</span>
+                </div>
             </div>
         </div>
+        <!-- NEW: Dice Legend -->
+        <div class="dice-legend">
+            <div class="legend-item"><span class="legend-color-box d4"></span> d4</div>
+            <div class="legend-item"><span class="legend-color-box d6"></span> d6</div>
+            <div class="legend-item"><span class="legend-color-box d8"></span> d8</div>
+            <div class="legend-item"><span class="legend-color-box d10"></span> d10</div>
+            <div class="legend-item"><span class="legend-color-box d12"></span> d12</div>
+            <div class="legend-item"><span class="legend-color-box d20"></span> d20</div>
+        </div>
+        <!-- End Dice Legend -->
     </div>
 
-    <div class="layout-controls">
-        <label>Game Log Position:</label>
-        <input type="radio" id="log-bottom" name="log-position" value="bottom" checked>
-        <label for="log-bottom">Bottom</label>
-        <input type="radio" id="log-side" name="log-position" value="side">
-        <label for="log-side">Side</label>
-    </div>
-
+    <!-- Main content wrapper -->
     <div class="main-content-wrapper" id="main-content-wrapper">
         <div class="game-container" id="game-container">
             <div class="players-area">
@@ -745,12 +878,11 @@
                 </div>
             </div>
 
+            <!-- Patient Action Buttons -->
             <div class="controls">
-                <button id="btnInitialRoll">Initial Roll (Determine First Player)</button>
                 <button id="btnStrengthAttack" disabled>Strength Attack</button>
                 <button id="btnMindAttack" disabled>Mind Attack</button>
                 <button id="btnPass" disabled>Pass</button>
-                <button id="btnNewGame">New Game</button>
             </div>
 
             <div id="mindAttackInputContainer" style="display: none;">
@@ -768,15 +900,25 @@
                 <button id="btnSubmitMindAttack">Submit Mind Attack</button>
             </div>
 
-            <div class="message" id="message">Click "Initial Roll" to begin!</div>
+            <div class="message" id="message"></div>
         </div>
 
+        <!-- Game Log Container -->
         <div class="game-log-container" id="game-log-container">
-            <h3>Game Log</h3>
+            <h3>Game Log
+                <!-- NEW: Toggle Switch for Log Position -->
+                <label class="switch">
+                    <input type="checkbox" id="log-position-toggle">
+                    <span class="slider"></span>
+                </label>
+            </h3>
             <div id="game-log">
-                </div>
+                <!-- Log entries will be appended here -->
+            </div>
         </div>
-    </div> <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
+    </div> <!-- End main-content-wrapper -->
+
+    <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
         <p id="gameOverMessage"></p>
         <button id="btnPlayAgain">Play Again</button>
     </div>
@@ -791,11 +933,11 @@
         const player1DicePoolEl = document.getElementById('player1-dice-pool');
         const player0CapturedDiceEl = document.getElementById('player0-captured-dice');
         const player1CapturedDiceEl = document.getElementById('player1-captured-dice');
-        const btnInitialRoll = document.getElementById('btnInitialRoll');
+        // Removed btnInitialRoll from here
         const btnStrengthAttack = document.getElementById('btnStrengthAttack');
         const btnMindAttack = document.getElementById('btnMindAttack');
         const btnPass = document.getElementById('btnPass');
-        const btnNewGame = document.getElementById('btnNewGame');
+        const btnNewGame = document.getElementById('btnNewGame'); // Moved to header
         const mindAttackInputContainer = document.getElementById('mindAttackInputContainer');
         const mindAttackDisplay = document.getElementById('mindAttackDisplay');
         const formulaButtons = document.querySelectorAll('.formula-btn');
@@ -806,17 +948,16 @@
         const gameOverOverlay = document.getElementById('gameOverOverlay');
         const gameOverMessageEl = document.getElementById('gameOverMessage');
         const btnPlayAgain = document.getElementById('btnPlayAgain');
-        const gameContainer = document.querySelector('.game-container'); // Get game container for animation positioning
+        const gameContainer = document.querySelector('.game-container');
 
         // Score and Log Elements
         const player0ScoreEl = document.getElementById('player0-score');
         const player1ScoreEl = document.getElementById('player1-score');
         const gameLogEl = document.getElementById('game-log');
 
-        // NEW: Layout Elements
+        // Layout Elements
         const mainContentWrapper = document.getElementById('main-content-wrapper');
-        const logBottomRadio = document.getElementById('log-bottom');
-        const logSideRadio = document.getElementById('log-side');
+        const logPositionToggle = document.getElementById('log-position-toggle'); // NEW: Toggle switch
 
         // --- Game State ---
         let players;
@@ -831,9 +972,10 @@
 
         const DICE_TYPES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'];
         const OPERATORS = ['+', '-', '*', '/'];
+        const PARENTHESES = ['(', ')']; // New constant for parentheses
         const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // For die labels
 
-        // NEW: Map for dice colors (for JS logic)
+        // Map for dice colors (for JS logic)
         const DICE_COLORS_MAP = {
             'd4': '#A3E4D7',
             'd6': '#F9E79F',
@@ -845,6 +987,7 @@
 
 
         // --- Sound Effects ---
+        // IMPORTANT: Update 'your-repo-name' with your actual GitHub repository name!
         const sounds = {
             roll: new Audio('/polyhedral-dice-game/sounds/roll.mp3'),
             click: new Audio('/polyhedral-dice-game/sounds/click.mp3'),
@@ -867,7 +1010,7 @@
             players = [
                 {
                     name: 'Player 1',
-                    dice: [], // Array of { type: 'dX', value: Y, id: 'uniqueId', label: 'A' }
+                    dice: [],
                     captured: [],
                     initialRollValues: [],
                     score: 0
@@ -890,7 +1033,7 @@
             player0CapturedDiceEl.innerHTML = '';
             player1CapturedDiceEl.innerHTML = '';
             
-            messageEl.textContent = 'Click "Initial Roll" to begin!';
+            messageEl.textContent = ''; // Clear initial message area
             mindAttackInputContainer.style.display = 'none';
             gameOverOverlay.style.display = 'none';
 
@@ -899,20 +1042,24 @@
             gameLogEl.innerHTML = ''; // Clear game log
             turnCounter = 0;
 
-            btnInitialRoll.disabled = false;
+            // btnInitialRoll.disabled = false; // Removed this button
             btnStrengthAttack.disabled = true;
             btnMindAttack.disabled = true;
             btnPass.disabled = true;
             btnSubmitMindAttack.disabled = true;
 
-            gamePhase = 'initialRoll';
+            gamePhase = 'initialRoll'; // This will be immediately changed by auto-roll
             selectedAttackingDie = null;
             selectedTargetDie = null;
             playing = true;
 
             updateScoreDisplay();
-            addGameLogMessage('Game started. Click "Initial Roll" to determine first player.', 'info');
+            addGameLogMessage('Game started. Click "New Game" to begin or "Play Again" after a game ends.', 'info');
             loadLayoutPreference(); // Load layout preference on init
+
+            // NEW: Automatically initiate initial roll when "New Game" is clicked.
+            determineFirstPlayer();
+            addGameLogMessage('New Game started.', 'info'); // Log the new game start
         }
 
         function updateScoreDisplay() {
@@ -920,7 +1067,6 @@
             player1ScoreEl.textContent = players[1].score;
         }
 
-        // UPDATED: Function to add messages to the game log, now supports HTML
         function addGameLogMessage(message, type = 'info', isHtml = false) {
             const logEntry = document.createElement('div');
             logEntry.classList.add('log-entry', type);
@@ -940,7 +1086,6 @@
 
             gameLogEl.prepend(logEntry); // Add to top for reverse chronological order
 
-            // Optionally limit log entries
             while (gameLogEl.children.length > 30) {
                 gameLogEl.lastChild.remove();
             }
@@ -961,19 +1106,18 @@
                 players[playerIndex].dice.push({ type: type, value: value, id: `${type}-${Date.now()}-${Math.random()}` });
                 players[playerIndex].initialRollValues.push(value);
             });
-            assignDiceLabels(playerIndex); // Assign labels after initial roll
+            assignDiceLabels(playerIndex);
         }
 
         function reRollSpecificDice(playerIndex, diceToReRoll) {
             diceToReRoll.forEach(die => {
                 die.value = rollDie(die.type);
             });
-            assignDiceLabels(playerIndex); // Re-assign labels after re-rolling/sorting
+            assignDiceLabels(playerIndex);
         }
 
-        // Assigns A, B, C... labels to dice based on their sorted order
         function assignDiceLabels(playerIndex) {
-            players[playerIndex].dice.sort((a, b) => a.value - b.value); // Sort for consistent labels
+            players[playerIndex].dice.sort((a, b) => a.value - b.value);
             players[playerIndex].dice.forEach((die, index) => {
                 die.label = ALPHA[index];
             });
@@ -1019,9 +1163,8 @@
                     `;
                 }
                 
-                // NEW: Add die type class for coloring
-                dieEl.classList.remove(...DICE_TYPES.map(type => `d${type.substring(1)}`)); // Remove all previous color classes
-                dieEl.classList.add(`d${die.type.substring(1)}`); // Add specific color class
+                dieEl.classList.remove(...DICE_TYPES.map(type => `d${type.substring(1)}`));
+                dieEl.classList.add(`d${die.type.substring(1)}`);
 
                 dieEl.classList.toggle('selected-attack', selectedAttackingDie && selectedAttackingDie.dieId === die.id);
                 dieEl.classList.toggle('selected-target', selectedTargetDie && selectedTargetDie.dieId === die.id);
@@ -1072,8 +1215,7 @@
             player0Panel.classList.toggle('player--active', activePlayerIndex === 0);
             player1Panel.classList.toggle('player--active', activePlayerIndex === 1);
 
-            btnInitialRoll.disabled = (gamePhase !== 'initialRoll');
-            btnNewGame.disabled = false;
+            // Removed btnInitialRoll.disabled logic
 
             mindAttackInputContainer.style.display = (gamePhase === 'mindAttackInput' ? 'flex' : 'none');
 
@@ -1090,7 +1232,7 @@
                 btnMindAttack.disabled = true;
                 btnPass.disabled = true;
                 btnSubmitMindAttack.disabled = currentFormulaParts.length === 0;
-            } else {
+            } else { // Game Over state, no actions possible
                 btnStrengthAttack.disabled = true;
                 btnMindAttack.disabled = true;
                 btnPass.disabled = true;
@@ -1188,21 +1330,32 @@
                 playSound('click');
                 if (clickedPlayerIndex === activePlayerIndex) {
                     const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
-                    // Allow operator after closing parenthesis or number, but not after another operator or opening parenthesis
-                    if (lastPart && (ALPHA.includes(lastPart) || lastPart === ')') && !OPERATORS.includes(lastPart)) {
+                    const clickedIsParen = PARENTHESES.includes(clickedDie.label); // Check if clicked label is a parenthesis
+                    const clickedIsOperator = OPERATORS.includes(clickedDie.label);
+
+                    // Allow parenthesis at start or after an operator
+                    if (currentFormulaParts.length === 0 && clickedDie.label === ')') {
+                        messageEl.textContent = "Formula cannot start with a closing parenthesis.";
+                        return;
+                    }
+                    // Prevent die immediately after another die or closing parenthesis without operator
+                    if (lastPart && (ALPHA.includes(lastPart) || lastPart === ')') && !OPERATORS.includes(lastPart) && !PARENTHESES.includes(clickedDie.label)) {
                         messageEl.textContent = "Please add an operator (+-*/) after a die or closing parenthesis.";
                         return;
                     }
-                    if (lastPart === '(') { // If last part is an opening parenthesis, next must be a die or another opening parenthesis
-                        messageEl.textContent = "Cannot place a die immediately after an opening parenthesis without an operator.";
+                    // Prevent die immediately after an opening parenthesis
+                    if (lastPart === '(' && ALPHA.includes(clickedDie.label)) { // This specifically checks for die after (
+                        // This is actually desired for (A+B) so this condition should be reversed
+                        // No, this condition is for the *die* click. if lastPart is '(', the current clicked die label should be added.
+                        // This conditional block is for a *die* being clicked. If the previous part was '(', it's okay to add a die.
+                    }
+                    // Prevent operators immediately after an opening parenthesis
+                    if (lastPart === '(' && isOperator) {
+                        messageEl.textContent = "Cannot place an operator immediately after an opening parenthesis.";
                         return;
                     }
-                    if (OPERATORS.includes(lastPart) && (clickedDie.label === '(' || clickedDie.label === ')')) {
-                        messageEl.textContent = "Cannot place parenthesis immediately after an operator.";
-                        return;
-                    }
-
-                    currentFormulaParts.push(clickedDie.label);
+                    
+                    currentFormulaParts.push(clickedDie.label); // Push the die's label
                     renderMindAttackDisplay();
                     const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
                     messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}). Click more dice or operators.`;
@@ -1233,7 +1386,7 @@
             const defender = players[defenderIndex];
 
             const attackingDie = attacker.dice.find(d => d.id === selectedAttackingDie.dieId);
-            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId);
+            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.id);
 
             if (!attackingDie || !targetDie) {
                 messageEl.textContent = "Error: Selected dice not found. Please re-select.";
@@ -1316,7 +1469,7 @@
                     switchTurn();
                 }
             });
-            if (animationPromises.length === 0) { // Fallback if no animation (e.g., targetDieEl not found)
+            if (animationPromises.length === 0) {
                  attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice reroll with value ${attackingDie.value}.`;
                  addGameLogMessage(attackMessage, 'info');
                  checkWinCondition();
@@ -1345,13 +1498,12 @@
             currentFormulaParts = [];
             renderMindAttackDisplay();
             const defenderPlayerIndex = selectedTargetDie.playerIndex;
-            const targetDie = players[defenderPlayerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+            const targetDie = players[defenderPlayerIndex].dice.find(d => d.id === selectedTargetDie.id);
             messageEl.textContent = `${players[activePlayerIndex].name}, click your dice (A, B, C...) and operator buttons to build a formula that equals ${players[defenderPlayerIndex].name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
             addGameLogMessage(`${players[activePlayerIndex].name} initiates Mind Attack against ${players[defenderPlayerIndex].name}'s ${targetDie.type} (${targetDie.value}). Building formula.`, 'info');
             updateUI();
         }
 
-        // NEW: Helper function to format mind attack formula for the log with colors
         function formatMindAttackFormulaForLog(formulaParts, attackerDice) {
             let formattedHtml = '';
             formulaParts.forEach(part => {
@@ -1359,15 +1511,26 @@
                     const die = attackerDice.find(d => d.label === part);
                     if (die) {
                         const bgColor = DICE_COLORS_MAP[die.type] || '#fff';
-                        formattedHtml += `<span class="formula-part" style="background-color: ${bgColor}; color: #34495e;">${die.value}</span>`;
+                        const textColor = getContrastColor(bgColor); // Get contrast color
+                        formattedHtml += `<span class="formula-part" style="background-color: ${bgColor}; color: ${textColor};">${die.value}</span>`;
                     } else {
-                        formattedHtml += `<span class="formula-part">${part}</span>`; // Fallback if die not found
+                        formattedHtml += `<span class="formula-part" style="background-color: #7f8c8d; color: #ecf0f1;">${part}</span>`; // Fallback if die not found
                     }
                 } else { // It's an operator or parenthesis
                     formattedHtml += `<span class="formula-part">${part}</span>`;
                 }
             });
             return formattedHtml.trim();
+        }
+
+        // Helper to determine text color for contrast
+        function getContrastColor(hexcolor) {
+            if (!hexcolor || hexcolor.length < 7) return '#34495e'; // Default to dark if invalid
+            const r = parseInt(hexcolor.substring(1, 3), 16);
+            const g = parseInt(hexcolor.substring(3, 5), 16);
+            const b = parseInt(hexcolor.substring(5, 7), 16);
+            const y = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+            return (y >= 128) ? '#34495e' : '#ffffff'; // Dark for light, white for dark
         }
 
 
@@ -1381,7 +1544,7 @@
             const attacker = players[activePlayerIndex];
             const defenderIndex = selectedTargetDie.playerIndex;
             const defender = players[defenderIndex];
-            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId);
+            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.id);
 
             if (!targetDie) {
                 messageEl.textContent = "Error: Target die not found. Please re-select.";
@@ -1440,7 +1603,6 @@
             playSound('reroll');
 
             const diceUsedInfo = diceUsedInFormula.map(d => `${d.type} dice value ${d.value}`).join(', ');
-            // UPDATED: Use the new helper for the formula part of the log message
             const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
             let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice with value ${targetDie.value} USING ${attacker.name}'s ${diceUsedInfo} with the EQUATION ${formattedFormulaHtml}.`;
 
@@ -1462,8 +1624,7 @@
                 if (rerolledDiceInfo) {
                     attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
                 }
-                // UPDATED: Pass true for isHtml
-                addGameLogMessage(attackMessage, 'info', true);
+                addGameLogMessage(attackMessage, 'info', true); // isHtml = true
 
                 currentFormulaParts = [];
                 renderMindAttackDisplay();
@@ -1502,35 +1663,37 @@
         function setLayoutPreference(position) {
             if (position === 'side') {
                 mainContentWrapper.classList.add('log-side');
-                logSideRadio.checked = true;
+                logPositionToggle.checked = true;
             } else {
                 mainContentWrapper.classList.remove('log-side');
-                logBottomRadio.checked = true;
+                logPositionToggle.checked = false;
             }
             localStorage.setItem('gameLogPosition', position);
         }
 
         function loadLayoutPreference() {
             const savedPosition = localStorage.getItem('gameLogPosition');
+            // Default to 'side' as requested
             if (savedPosition) {
                 setLayoutPreference(savedPosition);
             } else {
-                setLayoutPreference('bottom'); // Default if no preference saved
+                setLayoutPreference('side'); // Default to side
             }
         }
 
         // --- Event Listeners ---
-        btnInitialRoll.addEventListener('click', determineFirstPlayer);
+        // Removed btnInitialRoll.addEventListener
+        btnNewGame.addEventListener('click', initGame); // New Game now triggers auto-roll
         btnStrengthAttack.addEventListener('click', executeStrengthAttack);
         btnMindAttack.addEventListener('click', startMindAttackInput);
         btnSubmitMindAttack.addEventListener('click', executeMindAttack);
         btnPass.addEventListener('click', handlePass);
-        btnNewGame.addEventListener('click', initGame);
         btnPlayAgain.addEventListener('click', initGame);
 
-        // Layout control event listeners
-        logBottomRadio.addEventListener('change', () => setLayoutPreference('bottom'));
-        logSideRadio.addEventListener('change', () => setLayoutPreference('side'));
+        // Layout toggle listener
+        logPositionToggle.addEventListener('change', (event) => {
+            setLayoutPreference(event.target.checked ? 'side' : 'bottom');
+        });
 
         // Formula button listeners
         formulaButtons.forEach(button => {
@@ -1543,37 +1706,38 @@
 
                 const isOperator = OPERATORS.includes(value);
                 const lastIsOperator = OPERATORS.includes(lastPart);
+                const isParen = PARENTHESES.includes(value);
+                const lastIsParen = PARENTHESES.includes(lastPart);
                 const lastIsLetter = ALPHA.includes(lastPart);
-                const isParen = value === '(' || value === ')';
 
-                if (currentFormulaParts.length === 0 && (isOperator || value === ')')) {
-                    messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
-                    return;
-                }
-                if (isOperator && lastIsOperator) {
-                     messageEl.textContent = "Cannot have consecutive operators.";
-                     return;
-                }
-                if (lastIsLetter && ALPHA.includes(value)) {
-                    messageEl.textContent = "Please add an operator between dice.";
-                    return;
-                }
-                if (lastIsLetter && value === '(') {
-                    messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
-                    return;
-                }
-                if (lastPart === '(' && isOperator) {
-                    messageEl.textContent = "Parenthesis cannot be immediately followed by an operator.";
-                    return;
-                }
-                if (lastPart === '(' && value === ')') {
-                    messageEl.textContent = "Cannot have empty parentheses.";
-                    return;
+                // Validation rules for formula building
+                if (currentFormulaParts.length === 0) {
+                    if (isOperator || value === ')') {
+                        messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
+                        return;
+                    }
+                } else {
+                    if (isOperator && (lastIsOperator || lastPart === '(')) {
+                        messageEl.textContent = "Cannot have consecutive operators or an operator directly after an opening parenthesis.";
+                        return;
+                    }
+                    if (value === '(' && lastIsLetter) {
+                        messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
+                        return;
+                    }
+                    if (value === ')' && lastIsOperator) {
+                        messageEl.textContent = "Cannot close parenthesis immediately after an operator.";
+                        return;
+                    }
+                    if (lastPart === '(' && value === ')') {
+                        messageEl.textContent = "Cannot have empty parentheses.";
+                        return;
+                    }
                 }
                 
                 currentFormulaParts.push(value);
                 renderMindAttackDisplay();
-                const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.id);
                 messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
                 updateUI();
             });
