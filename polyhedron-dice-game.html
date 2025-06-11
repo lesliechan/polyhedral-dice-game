@@ -13,45 +13,45 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Align to top */
+            justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 10px; /* Adjust padding for new header */
+            padding: 10px;
             box-sizing: border-box;
-            overflow-x: hidden; /* Prevent horizontal scrollbars */
+            overflow-x: hidden;
         }
 
-        /* NEW: Game Header */
+        /* UPDATED: Game Header */
         .game-header {
             background-color: #34495e;
             border-radius: 10px;
-            padding: 15px 20px;
+            padding: 10px 20px; /* Reduced padding */
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
             text-align: center;
             width: 100%;
-            max-width: 900px; /* Match game-container max-width */
-            margin-bottom: 20px;
+            max-width: 900px;
+            margin-bottom: 15px; /* Reduced margin */
             box-sizing: border-box;
         }
 
         .game-header h1 {
             color: #f1c40f;
-            margin: 0 0 15px 0;
-            font-size: 2.5em;
+            margin: 0 0 10px 0; /* Reduced margin */
+            font-size: 2em; /* Smaller font size */
         }
 
         .score-container {
             display: flex;
             justify-content: space-around;
-            gap: 10px;
+            gap: 5px; /* Reduced gap */
             flex-wrap: wrap;
         }
 
         .player-score-panel {
             background-color: #2980b9;
             border-radius: 5px;
-            padding: 8px 15px;
-            font-size: 1.2em;
+            padding: 6px 12px; /* Reduced padding */
+            font-size: 1.1em; /* Slightly smaller font */
             font-weight: bold;
             display: flex;
             align-items: center;
@@ -60,25 +60,108 @@
 
         #player0-score, #player1-score {
             color: #f1c40f;
-            font-size: 1.3em;
+            font-size: 1.2em;
         }
 
-        /* End NEW: Game Header */
+        /* NEW: Layout Controls */
+        .layout-controls {
+            margin-bottom: 15px;
+            font-size: 0.9em;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .layout-controls label {
+            color: #ecf0f1;
+        }
+        .layout-controls input[type="radio"] {
+            margin-right: 5px;
+        }
 
+        /* NEW: Main Content Wrapper for Layout */
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column; /* Default: column (log at bottom) */
+            width: 100%;
+            max-width: 900px; /* Aligned with game-container's max-width */
+            align-items: center;
+            gap: 20px; /* Space between game and log when stacked */
+        }
+
+        /* Side layout specific styles */
+        .main-content-wrapper.log-side {
+            flex-direction: row; /* Change to row for side layout */
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top */
+            max-width: 1200px; /* Wider for side layout */
+            margin-top: 0; /* Adjust margin if needed */
+        }
+
+        /* Game container styles */
         .game-container {
             background-color: #34495e;
             border-radius: 10px;
             padding: 30px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
             text-align: center;
+            width: 100%; /* Default width for column layout */
             max-width: 900px;
-            width: 100%;
             position: relative;
             box-sizing: border-box;
-            margin-bottom: 20px; /* Space before log */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .main-content-wrapper.log-side .game-container {
+            width: 65%; /* Allocate space for game board */
+            max-width: 900px; /* Keep consistent max width for game board */
+            margin-bottom: 0; /* No bottom margin when side by side */
         }
 
-        /* Existing h1 removed as it's in game-header now */
+        /* Game log container styles */
+        .game-log-container {
+            background-color: #34495e;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+            width: 100%; /* Default width for column layout */
+            max-width: 900px;
+            box-sizing: border-box;
+            flex-shrink: 0; /* Prevent shrinking */
+            max-height: 200px; /* Default max-height for bottom log */
+        }
+        .main-content-wrapper.log-side .game-log-container {
+            width: 35%; /* Allocate space for log */
+            max-width: 350px; /* Max width for log when on side */
+            min-width: 250px; /* Ensure log is not too narrow */
+            max-height: 700px; /* Allow more height for log on side */
+            margin-top: 0; /* No top margin when side by side */
+        }
+        .game-log-container h3 {
+            color: #ecf0f1;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        #game-log {
+            background-color: #2c3e50;
+            border-radius: 5px;
+            padding: 10px;
+            max-height: 100%; /* Take full height of container */
+            overflow-y: auto; /* Enable vertical scrolling */
+            border: 1px solid #4a627a;
+            color: #bdc3c7;
+            font-size: 0.9em; /* Default font size for bottom log */
+            line-height: 1.4;
+            text-align: left;
+        }
+        /* Smaller text for side log */
+        .main-content-wrapper.log-side #game-log {
+            font-size: 0.8em;
+        }
+
+        /* END NEW: Layout */
 
         .players-area {
             display: flex;
@@ -134,6 +217,7 @@
             position: relative;
             width: 60px;
             height: 60px;
+            /* Default background, will be overridden by type-specific class */
             background-color: #ecf0f1;
             border-radius: 8px;
             display: flex;
@@ -142,7 +226,7 @@
             justify-content: center;
             font-size: 1.2em;
             font-weight: bold;
-            color: #34495e;
+            color: #34495e; /* Default text color for light backgrounds */
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
             cursor: pointer;
             transition: transform 0.1s ease-in-out, border 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
@@ -151,6 +235,24 @@
             box-sizing: border-box;
         }
 
+        /* NEW: Dice Colors */
+        .die-item.d4 { background-color: #A3E4D7; } /* Light Teal */
+        .die-item.d6 { background-color: #F9E79F; } /* Light Yellow */
+        .die-item.d8 { background-color: #D2B4DE; } /* Light Purple */
+        .die-item.d10 { background-color: #F5B7B1; } /* Light Coral */
+        .die-item.d12 { background-color: #A9CCE3; } /* Light Blue */
+        .die-item.d20 { background-color: #FADBD8; } /* Light Pink */
+
+        /* Ensure text is dark on light backgrounds */
+        .die-item.d4 .die-value, .die-item.d4 .die-type, .die-item.d4 .die-label,
+        .die-item.d6 .die-value, .die-item.d6 .die-type, .die-item.d6 .die-label,
+        .die-item.d8 .die-value, .die-item.d8 .die-type, .die-item.d8 .die-label,
+        .die-item.d10 .die-value, .die-item.d10 .die-type, .die-item.d10 .die-label,
+        .die-item.d12 .die-value, .die-item.d12 .die-type, .die-item.d12 .die-label,
+        .die-item.d20 .die-value, .die-item.d20 .die-type, .die-item.d20 .die-label {
+            color: #34495e; /* Dark text for all light backgrounds */
+        }
+        /* Selected/highlighted states */
         .die-item.selected-attack {
             border: 4px solid #f1c40f;
             transform: scale(1.08);
@@ -179,7 +281,7 @@
 
         .die-type {
             font-size: 0.7em;
-            color: #7f8c8d;
+            color: #7f8c8d; /* Original color might be too light on some backgrounds, adjust if needed */
             position: absolute;
             top: 5px;
             left: 5px;
@@ -188,7 +290,7 @@
         .die-label {
             font-size: 1.1em;
             font-weight: bolder;
-            color: #3498db;
+            color: #3498db; /* Original color might be too light on some backgrounds, adjust if needed */
             position: absolute;
             bottom: -10px;
             background-color: #2c3e50;
@@ -324,39 +426,7 @@
             font-weight: bold;
             color: #f1c40f;
             margin-top: 20px;
-            min-height: 30px; /* Ensure space even when empty */
-        }
-
-        /* NEW: Game Log Container */
-        .game-log-container {
-            background-color: #34495e;
-            border-radius: 10px;
-            padding: 15px 20px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-            width: 100%;
-            max-width: 900px;
-            margin-top: 20px;
-            box-sizing: border-box;
-        }
-
-        .game-log-container h3 {
-            color: #ecf0f1;
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 1.5em;
-        }
-
-        #game-log {
-            background-color: #2c3e50;
-            border-radius: 5px;
-            padding: 10px;
-            max-height: 200px; /* Limit height to allow scrolling */
-            overflow-y: auto; /* Enable vertical scrolling */
-            border: 1px solid #4a627a;
-            color: #bdc3c7;
-            font-size: 0.9em;
-            line-height: 1.4;
-            text-align: left; /* Align log messages left */
+            min-height: 30px;
         }
 
         .log-entry {
@@ -371,8 +441,21 @@
         .log-entry.info { color: #bdc3c7; }
         .log-entry.win { color: #2ecc71; font-weight: bold; }
         .log-entry.error { color: #e74c3c; font-weight: bold; }
-        /* End NEW: Game Log Container */
 
+        /* Style for numeric formula parts in log */
+        .log-entry .formula-part {
+            padding: 1px 3px;
+            border-radius: 2px;
+            display: inline-block; /* Allows padding and background */
+            font-weight: bold;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            margin: 0 1px; /* Small space between parts */
+            white-space: nowrap; /* Keep parts together */
+        }
+        .log-entry .formula-part span {
+            /* To ensure consistency with the direct text parts */
+            color: inherit;
+        }
 
         .game-over-overlay {
             position: fixed;
@@ -397,7 +480,7 @@
             padding: 15px 30px;
         }
 
-        /* NEW: Animation CSS (unchanged from previous) */
+        /* Animation CSS (unchanged from previous) */
         @keyframes rotatePulse {
             0% { transform: rotateY(0deg) scale(1); }
             50% { transform: rotateY(360deg) scale(1.1); }
@@ -431,6 +514,27 @@
 
         /* --- MEDIA QUERIES FOR RESPONSIVENESS --- */
 
+        /* For screens smaller than 1200px (primary breakpoint for side-log layout) */
+        @media screen and (max-width: 1200px) {
+            .main-content-wrapper.log-side {
+                flex-direction: column; /* Stack back to column for smaller screens */
+                max-width: 900px; /* Revert to column max-width */
+            }
+            .main-content-wrapper.log-side .game-container,
+            .main-content-wrapper.log-side .game-log-container {
+                width: 100%; /* Full width when stacked */
+                max-width: 900px; /* Match main container */
+                margin-bottom: 20px; /* Re-add margin */
+            }
+            .main-content-wrapper.log-side .game-log-container {
+                max-height: 200px; /* Revert max height */
+            }
+            .main-content-wrapper.log-side #game-log {
+                font-size: 0.9em; /* Revert font size */
+            }
+        }
+
+
         /* For screens smaller than 800px (e.g., larger tablets in portrait, small laptops) */
         @media screen and (max-width: 800px) {
             .game-header, .game-container, .game-log-container {
@@ -438,15 +542,15 @@
             }
 
             .game-header h1 {
-                font-size: 2.2em; /* Slightly smaller title */
+                font-size: 1.8em; /* Further smaller title */
             }
 
             .player-score-panel {
-                font-size: 1.1em;
+                font-size: 1.0em;
             }
 
             #player0-score, #player1-score {
-                font-size: 1.2em;
+                font-size: 1.1em;
             }
 
             .players-area {
@@ -490,6 +594,10 @@
                 font-size: 0.85em;
             }
 
+            .main-content-wrapper { /* Ensure consistency when stacked */
+                max-width: 800px;
+            }
+
             #mindAttackDisplay {
                 width: 90%; /* Ensure display fits well */
             }
@@ -502,16 +610,16 @@
             }
 
             .game-header h1 {
-                font-size: 1.8em;
+                font-size: 1.6em;
             }
 
             .player-score-panel {
-                font-size: 1em;
-                padding: 6px 10px;
+                font-size: 0.9em;
+                padding: 5px 8px;
             }
 
             #player0-score, #player1-score {
-                font-size: 1.1em;
+                font-size: 1.0em;
             }
 
             .game-header .score-container {
@@ -609,56 +717,66 @@
             </div>
         </div>
     </div>
-    <div class="game-container">
-        <div class="players-area">
-            <div class="player-panel player--0">
-                <h2>Player 1</h2>
-                <div class="dice-pool-label">Your Dice Pool:</div>
-                <div class="dice-pool" id="player0-dice-pool"></div>
-                <div class="captured-dice-label">Captured Dice:</div>
-                <div class="captured-dice-pool" id="player0-captured-dice"></div>
-            </div>
-            <div class="player-panel player--1">
-                <h2>Player 2</h2>
-                <div class="dice-pool-label">Your Dice Pool:</div>
-                <div class="dice-pool" id="player1-dice-pool"></div>
-                <div class="captured-dice-label">Captured Dice:</div>
-                <div class="captured-dice-pool" id="player1-captured-dice"></div>
-            </div>
-        </div>
 
-        <div class="controls">
-            <button id="btnInitialRoll">Initial Roll (Determine First Player)</button>
-            <button id="btnStrengthAttack" disabled>Strength Attack</button>
-            <button id="btnMindAttack" disabled>Mind Attack</button>
-            <button id="btnPass" disabled>Pass</button>
-            <button id="btnNewGame">New Game</button>
-        </div>
-
-        <div id="mindAttackInputContainer" style="display: none;">
-            <div id="mindAttackDisplay"></div>
-            <div class="mind-attack-buttons">
-                <button class="formula-btn" data-value="(">(</button>
-                <button class="formula-btn" data-value=")">)</button>
-                <button class="formula-btn" data-value="+">+</button>
-                <button class="formula-btn" data-value="-">-</button>
-                <button class="formula-btn" data-value="*">*</button>
-                <button class="formula-btn" data-value="/">/</button>
-                <button id="btnFormulaClear">Clear</button>
-                <button id="btnFormulaBackspace">Bksp</button>
-            </div>
-            <button id="btnSubmitMindAttack">Submit Mind Attack</button>
-        </div>
-
-        <div class="message" id="message">Click "Initial Roll" to begin!</div>
+    <div class="layout-controls">
+        <label>Game Log Position:</label>
+        <input type="radio" id="log-bottom" name="log-position" value="bottom" checked>
+        <label for="log-bottom">Bottom</label>
+        <input type="radio" id="log-side" name="log-position" value="side">
+        <label for="log-side">Side</label>
     </div>
 
-    <div class="game-log-container">
-        <h3>Game Log</h3>
-        <div id="game-log">
+    <div class="main-content-wrapper" id="main-content-wrapper">
+        <div class="game-container" id="game-container">
+            <div class="players-area">
+                <div class="player-panel player--0">
+                    <h2>Player 1</h2>
+                    <div class="dice-pool-label">Your Dice Pool:</div>
+                    <div class="dice-pool" id="player0-dice-pool"></div>
+                    <div class="captured-dice-label">Captured Dice:</div>
+                    <div class="captured-dice-pool" id="player0-captured-dice"></div>
+                </div>
+                <div class="player-panel player--1">
+                    <h2>Player 2</h2>
+                    <div class="dice-pool-label">Your Dice Pool:</div>
+                    <div class="dice-pool" id="player1-dice-pool"></div>
+                    <div class="captured-dice-label">Captured Dice:</div>
+                    <div class="captured-dice-pool" id="player1-captured-dice"></div>
+                </div>
             </div>
-    </div>
-    <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
+
+            <div class="controls">
+                <button id="btnInitialRoll">Initial Roll (Determine First Player)</button>
+                <button id="btnStrengthAttack" disabled>Strength Attack</button>
+                <button id="btnMindAttack" disabled>Mind Attack</button>
+                <button id="btnPass" disabled>Pass</button>
+                <button id="btnNewGame">New Game</button>
+            </div>
+
+            <div id="mindAttackInputContainer" style="display: none;">
+                <div id="mindAttackDisplay"></div>
+                <div class="mind-attack-buttons">
+                    <button class="formula-btn" data-value="(">(</button>
+                    <button class="formula-btn" data-value=")">)</button>
+                    <button class="formula-btn" data-value="+">+</button>
+                    <button class="formula-btn" data-value="-">-</button>
+                    <button class="formula-btn" data-value="*">*</button>
+                    <button class="formula-btn" data-value="/">/</button>
+                    <button id="btnFormulaClear">Clear</button>
+                    <button id="btnFormulaBackspace">Bksp</button>
+                </div>
+                <button id="btnSubmitMindAttack">Submit Mind Attack</button>
+            </div>
+
+            <div class="message" id="message">Click "Initial Roll" to begin!</div>
+        </div>
+
+        <div class="game-log-container" id="game-log-container">
+            <h3>Game Log</h3>
+            <div id="game-log">
+                </div>
+        </div>
+    </div> <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
         <p id="gameOverMessage"></p>
         <button id="btnPlayAgain">Play Again</button>
     </div>
@@ -690,10 +808,15 @@
         const btnPlayAgain = document.getElementById('btnPlayAgain');
         const gameContainer = document.querySelector('.game-container'); // Get game container for animation positioning
 
-        // NEW: Score and Log Elements
+        // Score and Log Elements
         const player0ScoreEl = document.getElementById('player0-score');
         const player1ScoreEl = document.getElementById('player1-score');
         const gameLogEl = document.getElementById('game-log');
+
+        // NEW: Layout Elements
+        const mainContentWrapper = document.getElementById('main-content-wrapper');
+        const logBottomRadio = document.getElementById('log-bottom');
+        const logSideRadio = document.getElementById('log-side');
 
         // --- Game State ---
         let players;
@@ -702,7 +825,7 @@
         let selectedTargetDie = null;    // { playerIndex, dieId }
         let gamePhase = 'initialRoll'; // 'initialRoll', 'playerTurn', 'mindAttackInput'
         let playing = false;
-        let turnCounter = 0; // NEW: Track turns for log
+        let turnCounter = 0;
 
         let currentFormulaParts = []; // Stores parts of the Mind Attack formula (e.g., ['A', '+', 'B'])
 
@@ -710,9 +833,18 @@
         const OPERATORS = ['+', '-', '*', '/'];
         const ALPHA = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // For die labels
 
+        // NEW: Map for dice colors (for JS logic)
+        const DICE_COLORS_MAP = {
+            'd4': '#A3E4D7',
+            'd6': '#F9E79F',
+            'd8': '#D2B4DE',
+            'd10': '#F5B7B1',
+            'd12': '#A9CCE3',
+            'd20': '#FADBD8'
+        };
+
+
         // --- Sound Effects ---
-        // IMPORTANT: Update 'your-repo-name' with your actual GitHub repository name!
-        // Example: If your repo is 'my-awesome-game', then use '/my-awesome-game/sounds/roll.mp3'
         const sounds = {
             roll: new Audio('/polyhedral-dice-game/sounds/roll.mp3'),
             click: new Audio('/polyhedral-dice-game/sounds/click.mp3'),
@@ -738,21 +870,20 @@
                     dice: [], // Array of { type: 'dX', value: Y, id: 'uniqueId', label: 'A' }
                     captured: [],
                     initialRollValues: [],
-                    score: 0 // NEW: Initialize score
+                    score: 0
                 },
                 {
                     name: 'Player 2',
                     dice: [],
                     captured: [],
                     initialRollValues: [],
-                    score: 0 // NEW: Initialize score
+                    score: 0
                 }
             ];
 
             player0Panel.classList.remove('player--active', 'player--winner');
             player1Panel.classList.remove('player--active', 'player--winner');
             
-            // Clear dice pools visually and ensure event listeners are clean via delegation
             player0DicePoolEl.innerHTML = '';
             player1DicePoolEl.innerHTML = '';
 
@@ -765,8 +896,8 @@
 
             currentFormulaParts = [];
             renderMindAttackDisplay();
-            gameLogEl.innerHTML = ''; // NEW: Clear game log
-            turnCounter = 0; // NEW: Reset turn counter
+            gameLogEl.innerHTML = ''; // Clear game log
+            turnCounter = 0;
 
             btnInitialRoll.disabled = false;
             btnStrengthAttack.disabled = true;
@@ -779,27 +910,38 @@
             selectedTargetDie = null;
             playing = true;
 
-            updateScoreDisplay(); // NEW: Update score display
-            addGameLogMessage('Game started. Click "Initial Roll" to determine first player.', 'info'); // NEW: Log initial message
+            updateScoreDisplay();
+            addGameLogMessage('Game started. Click "Initial Roll" to determine first player.', 'info');
+            loadLayoutPreference(); // Load layout preference on init
         }
 
-        // NEW: Function to update score display
         function updateScoreDisplay() {
             player0ScoreEl.textContent = players[0].score;
             player1ScoreEl.textContent = players[1].score;
         }
 
-        // NEW: Function to add messages to the game log
-        function addGameLogMessage(message, type = 'info') {
+        // UPDATED: Function to add messages to the game log, now supports HTML
+        function addGameLogMessage(message, type = 'info', isHtml = false) {
             const logEntry = document.createElement('div');
             logEntry.classList.add('log-entry', type);
-            // Prefix message with turn number if in game, or "Game" for setup
+            
             const prefix = turnCounter > 0 ? `Turn ${turnCounter}: ` : `Game: `;
-            logEntry.textContent = prefix + message;
+            const prefixSpan = document.createElement('span');
+            prefixSpan.textContent = prefix;
+            logEntry.appendChild(prefixSpan);
+
+            const messageContentSpan = document.createElement('span');
+            if (isHtml) {
+                messageContentSpan.innerHTML = message;
+            } else {
+                messageContentSpan.textContent = message;
+            }
+            logEntry.appendChild(messageContentSpan);
+
             gameLogEl.prepend(logEntry); // Add to top for reverse chronological order
 
-            // Optionally limit log entries (e.g., to last 20)
-            while (gameLogEl.children.length > 30) { // Keep last 30 messages
+            // Optionally limit log entries
+            while (gameLogEl.children.length > 30) {
                 gameLogEl.lastChild.remove();
             }
         }
@@ -876,6 +1018,10 @@
                         <span class="die-value">${die.value}</span>
                     `;
                 }
+                
+                // NEW: Add die type class for coloring
+                dieEl.classList.remove(...DICE_TYPES.map(type => `d${type.substring(1)}`)); // Remove all previous color classes
+                dieEl.classList.add(`d${die.type.substring(1)}`); // Add specific color class
 
                 dieEl.classList.toggle('selected-attack', selectedAttackingDie && selectedAttackingDie.dieId === die.id);
                 dieEl.classList.toggle('selected-target', selectedTargetDie && selectedTargetDie.dieId === die.id);
@@ -921,7 +1067,7 @@
             renderDicePool(1);
             renderCapturedDice(0);
             renderCapturedDice(1);
-            updateScoreDisplay(); // NEW: Ensure score is always updated
+            updateScoreDisplay();
 
             player0Panel.classList.toggle('player--active', activePlayerIndex === 0);
             player1Panel.classList.toggle('player--active', activePlayerIndex === 1);
@@ -976,15 +1122,15 @@
 
             if (!firstPlayerDetermined) {
                 messageEl.textContent = "It's a tie on initial rolls! Re-rolling to determine first player.";
-                addGameLogMessage("Initial roll resulted in a tie. Re-rolling.", "info"); // NEW: Log tie
+                addGameLogMessage("Initial roll resulted in a tie. Re-rolling.", "info");
                 setTimeout(determineFirstPlayer, 1500);
                 return;
             }
 
             messageEl.textContent = `${players[activePlayerIndex].name} goes first! Choose one of your dice to attack and an opponent's die to target.`;
-            addGameLogMessage(`Initial dice roll result: ${players[activePlayerIndex].name} starts.`, 'info'); // NEW: Log first player
+            addGameLogMessage(`Initial dice roll result: ${players[activePlayerIndex].name} starts.`, 'info');
             gamePhase = 'playerTurn';
-            turnCounter = 1; // NEW: Start turn counter
+            turnCounter = 1;
             updateUI();
         }
 
@@ -992,10 +1138,10 @@
             selectedAttackingDie = null;
             selectedTargetDie = null;
             activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
-            turnCounter++; // NEW: Increment turn counter
+            turnCounter++;
             messageEl.textContent = `${players[activePlayerIndex].name}'s turn. Choose one of your dice to attack and an opponent's die to target.`;
-            addGameLogMessage(`${players[activePlayerIndex].name}'s turn.`, 'info'); // NEW: Log turn switch
-            gamePhase = 'playerTurn'; // Reset phase for new turn
+            addGameLogMessage(`${players[activePlayerIndex].name}'s turn.`, 'info');
+            gamePhase = 'playerTurn';
             updateUI();
             checkPassCondition();
         }
@@ -1042,10 +1188,20 @@
                 playSound('click');
                 if (clickedPlayerIndex === activePlayerIndex) {
                     const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
-                    if (lastPart && (ALPHA.includes(lastPart) || lastPart === ')')) {
+                    // Allow operator after closing parenthesis or number, but not after another operator or opening parenthesis
+                    if (lastPart && (ALPHA.includes(lastPart) || lastPart === ')') && !OPERATORS.includes(lastPart)) {
                         messageEl.textContent = "Please add an operator (+-*/) after a die or closing parenthesis.";
                         return;
                     }
+                    if (lastPart === '(') { // If last part is an opening parenthesis, next must be a die or another opening parenthesis
+                        messageEl.textContent = "Cannot place a die immediately after an opening parenthesis without an operator.";
+                        return;
+                    }
+                    if (OPERATORS.includes(lastPart) && (clickedDie.label === '(' || clickedDie.label === ')')) {
+                        messageEl.textContent = "Cannot place parenthesis immediately after an operator.";
+                        return;
+                    }
+
                     currentFormulaParts.push(clickedDie.label);
                     renderMindAttackDisplay();
                     const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
@@ -1081,13 +1237,13 @@
 
             if (!attackingDie || !targetDie) {
                 messageEl.textContent = "Error: Selected dice not found. Please re-select.";
-                addGameLogMessage("Error: Selected dice for strength attack not found. Turn reset.", "error"); // NEW: Log error
+                addGameLogMessage("Error: Selected dice for strength attack not found. Turn reset.", "error");
                 switchTurn();
                 return;
             }
             
-            const originalAttackerValue = attackingDie.value; // Store for log
-            const originalTargetValue = targetDie.value;     // Store for log
+            const originalAttackerValue = attackingDie.value;
+            const originalTargetValue = targetDie.value;
 
             const animationPromises = [];
 
@@ -1106,7 +1262,7 @@
             
             let attackMessage = `${attacker.name} performs Strength Attack AGAINST ${defender.name}'s ${targetDie.type} dice with value ${originalTargetValue} USING ${attacker.name}'s ${attackingDie.type} dice with value ${originalAttackerValue}.`;
 
-            if (originalAttackerValue >= originalTargetValue) { // Use original values for comparison
+            if (originalAttackerValue >= originalTargetValue) {
                 const targetDieEl = player0DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`) || player1DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`);
 
                 if (targetDieEl) {
@@ -1143,7 +1299,7 @@
 
                 defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
                 attacker.captured.push(targetDie);
-                attacker.score++; // NEW: Increase attacker's score
+                attacker.score++;
                 attackMessage += ` Captures ${defender.name}'s ${targetDie.type} dice.`;
                 messageEl.textContent = `${attacker.name}'s ${attackingDie.type.toUpperCase()} (${originalAttackerValue}) captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${originalTargetValue})!`;
 
@@ -1153,14 +1309,14 @@
             }
 
             Promise.all(animationPromises).then(() => {
-                attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice reroll with value ${attackingDie.value}.`; // Use NEW value for reroll
-                addGameLogMessage(attackMessage, 'info'); // NEW: Log detailed message
+                attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice reroll with value ${attackingDie.value}.`;
+                addGameLogMessage(attackMessage, 'info');
                 checkWinCondition();
                 if (playing) {
                     switchTurn();
                 }
             });
-            if (animationPromises.length === 0) {
+            if (animationPromises.length === 0) { // Fallback if no animation (e.g., targetDieEl not found)
                  attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice reroll with value ${attackingDie.value}.`;
                  addGameLogMessage(attackMessage, 'info');
                  checkWinCondition();
@@ -1191,9 +1347,29 @@
             const defenderPlayerIndex = selectedTargetDie.playerIndex;
             const targetDie = players[defenderPlayerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
             messageEl.textContent = `${players[activePlayerIndex].name}, click your dice (A, B, C...) and operator buttons to build a formula that equals ${players[defenderPlayerIndex].name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
-            addGameLogMessage(`${players[activePlayerIndex].name} initiates Mind Attack against ${players[defenderPlayerIndex].name}'s ${targetDie.type} (${targetDie.value}). Building formula.`, 'info'); // NEW: Log Mind Attack initiation
+            addGameLogMessage(`${players[activePlayerIndex].name} initiates Mind Attack against ${players[defenderPlayerIndex].name}'s ${targetDie.type} (${targetDie.value}). Building formula.`, 'info');
             updateUI();
         }
+
+        // NEW: Helper function to format mind attack formula for the log with colors
+        function formatMindAttackFormulaForLog(formulaParts, attackerDice) {
+            let formattedHtml = '';
+            formulaParts.forEach(part => {
+                if (ALPHA.includes(part)) { // It's a die label
+                    const die = attackerDice.find(d => d.label === part);
+                    if (die) {
+                        const bgColor = DICE_COLORS_MAP[die.type] || '#fff';
+                        formattedHtml += `<span class="formula-part" style="background-color: ${bgColor}; color: #34495e;">${die.value}</span>`;
+                    } else {
+                        formattedHtml += `<span class="formula-part">${part}</span>`; // Fallback if die not found
+                    }
+                } else { // It's an operator or parenthesis
+                    formattedHtml += `<span class="formula-part">${part}</span>`;
+                }
+            });
+            return formattedHtml.trim();
+        }
+
 
         function executeMindAttack() {
             const formula = currentFormulaParts.join('');
@@ -1209,7 +1385,7 @@
 
             if (!targetDie) {
                 messageEl.textContent = "Error: Target die not found. Please re-select.";
-                addGameLogMessage("Error: Target die for mind attack not found. Turn reset.", "error"); // NEW: Log error
+                addGameLogMessage("Error: Target die for mind attack not found. Turn reset.", "error");
                 switchTurn();
                 return;
             }
@@ -1244,7 +1420,7 @@
 
             } catch (e) {
                 messageEl.textContent = `Invalid formula: ${e.message}. Please check your expression.`;
-                addGameLogMessage(`${attacker.name} submitted an invalid formula "${formula}": ${e.message}.`, 'error'); // NEW: Log invalid formula
+                addGameLogMessage(`${attacker.name} submitted an invalid formula "${formula}": ${e.message}.`, 'error');
                 return;
             }
 
@@ -1263,15 +1439,16 @@
             });
             playSound('reroll');
 
-            // Collect info for the log message *before* dice values change
             const diceUsedInfo = diceUsedInFormula.map(d => `${d.type} dice value ${d.value}`).join(', ');
-            let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice with value ${targetDie.value} USING ${attacker.name}'s ${diceUsedInfo} with the EQUATION ${formula}.`;
+            // UPDATED: Use the new helper for the formula part of the log message
+            const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
+            let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice with value ${targetDie.value} USING ${attacker.name}'s ${diceUsedInfo} with the EQUATION ${formattedFormulaHtml}.`;
 
             Promise.all(animationPromises).then(() => {
                 if (result === targetDie.value) {
                     defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
                     attacker.captured.push(targetDie);
-                    attacker.score++; // NEW: Increase attacker's score
+                    attacker.score++;
                     attackMessage += ` Captures ${defender.name}'s ${targetDie.type} dice.`;
                     messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula (${formula}) = ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
                     playSound('ding');
@@ -1285,7 +1462,8 @@
                 if (rerolledDiceInfo) {
                     attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
                 }
-                addGameLogMessage(attackMessage, 'info'); // NEW: Log detailed message
+                // UPDATED: Pass true for isHtml
+                addGameLogMessage(attackMessage, 'info', true);
 
                 currentFormulaParts = [];
                 renderMindAttackDisplay();
@@ -1300,7 +1478,7 @@
 
         function handlePass() {
             messageEl.textContent = `${players[activePlayerIndex].name} chose to pass.`;
-            addGameLogMessage(`${players[activePlayerIndex].name} passes their turn.`, 'info'); // NEW: Log pass
+            addGameLogMessage(`${players[activePlayerIndex].name} passes their turn.`, 'info');
             switchTurn();
         }
 
@@ -1316,7 +1494,28 @@
                 player1Panel.classList.remove('player--active');
                 document.querySelector(`.player--${activePlayerIndex}`).classList.add('player--winner');
                 playSound('win');
-                addGameLogMessage(`${winnerName} WINS THE GAME! Final Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`, 'win'); // NEW: Log win
+                addGameLogMessage(`${winnerName} WINS THE GAME! Final Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`, 'win');
+            }
+        }
+
+        // NEW: Layout preference functions
+        function setLayoutPreference(position) {
+            if (position === 'side') {
+                mainContentWrapper.classList.add('log-side');
+                logSideRadio.checked = true;
+            } else {
+                mainContentWrapper.classList.remove('log-side');
+                logBottomRadio.checked = true;
+            }
+            localStorage.setItem('gameLogPosition', position);
+        }
+
+        function loadLayoutPreference() {
+            const savedPosition = localStorage.getItem('gameLogPosition');
+            if (savedPosition) {
+                setLayoutPreference(savedPosition);
+            } else {
+                setLayoutPreference('bottom'); // Default if no preference saved
             }
         }
 
@@ -1329,6 +1528,10 @@
         btnNewGame.addEventListener('click', initGame);
         btnPlayAgain.addEventListener('click', initGame);
 
+        // Layout control event listeners
+        logBottomRadio.addEventListener('change', () => setLayoutPreference('bottom'));
+        logSideRadio.addEventListener('change', () => setLayoutPreference('side'));
+
         // Formula button listeners
         formulaButtons.forEach(button => {
             button.addEventListener('click', () => {
@@ -1338,7 +1541,6 @@
                 const value = button.dataset.value;
                 const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
 
-                // Basic validation for formula building
                 const isOperator = OPERATORS.includes(value);
                 const lastIsOperator = OPERATORS.includes(lastPart);
                 const lastIsLetter = ALPHA.includes(lastPart);
@@ -1348,27 +1550,22 @@
                     messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
                     return;
                 }
-                // Prevent consecutive operators unless it's a valid sign (e.g., --5) not needed for this game.
                 if (isOperator && lastIsOperator) {
                      messageEl.textContent = "Cannot have consecutive operators.";
                      return;
                 }
-                // Prevent letter followed by letter without operator
                 if (lastIsLetter && ALPHA.includes(value)) {
                     messageEl.textContent = "Please add an operator between dice.";
                     return;
                 }
-                // Prevent number followed by opening parenthesis without operator (e.g. A() )
                 if (lastIsLetter && value === '(') {
                     messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
                     return;
                 }
-                // Prevent opening parenthesis followed by operator without content
                 if (lastPart === '(' && isOperator) {
                     messageEl.textContent = "Parenthesis cannot be immediately followed by an operator.";
                     return;
                 }
-                // Prevent empty parentheses (e.g., ())
                 if (lastPart === '(' && value === ')') {
                     messageEl.textContent = "Cannot have empty parentheses.";
                     return;
