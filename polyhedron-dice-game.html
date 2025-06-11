@@ -1234,7 +1234,7 @@
             mindAttackInputContainer.style.display = (gamePhase === 'mindAttackInput' ? 'flex' : 'none');
 
             const canAttack = selectedAttackingDie && selectedTargetDie &&
-                              selectedAttackingDie.playerIndex === activePlayerIndex &&
+                              selectedAttactingDie.playerIndex === activePlayerIndex &&
                               selectedTargetDie.playerIndex !== activePlayerIndex;
 
             if (gamePhase === 'playerTurn') {
@@ -1376,17 +1376,19 @@
         }
 
         function executeStrengthAttack() {
-            playSound('hit');
             if (!selectedAttackingDie || !selectedTargetDie) {
-                messageEl.textContent = "Please select one of your dice to attack and one of your opponent's dice to target before attacking.";
-                return;
+                messageEl.textContent = "Error: Dice selection lost. Please re-select your attacking die and an opponent's target die.";
+                addGameLogMessage(`Attack aborted: Dice selection lost. Attacker: ${selectedAttackingDie ? selectedAttackingDie.dieId : 'None'}, Target: ${selectedTargetDie ? selectedTargetDie.dieId : 'None'}.`, 'error');
+                return; // Do not switch turn, allow user to correct selection
             }
             if (selectedAttackingDie.playerIndex !== activePlayerIndex) {
                 messageEl.textContent = "You can only use your own dice to attack.";
+                addGameLogMessage("Strength Attack aborted: Attacking die not owned by active player.", "error");
                 return;
             }
             if (selectedTargetDie.playerIndex === activePlayerIndex) {
                 messageEl.textContent = "You must target an opponent's die.";
+                addGameLogMessage("Strength Attack aborted: Target die owned by active player.", "error");
                 return;
             }
 
@@ -1395,15 +1397,22 @@
             const defender = players[defenderIndex];
 
             const attackingDie = attacker.dice.find(d => d.id === selectedAttackingDie.dieId);
-            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.id);
+            // FIX: Changed selectedTargetDie.id to selectedTargetDie.dieId
+            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId); 
 
-            if (!attackingDie || !targetDie) {
-                messageEl.textContent = "Error: Selected dice not found. Please re-select.";
-                addGameLogMessage("Error: Selected dice for strength attack not found. Turn reset.", "error");
-                switchTurn();
+            if (!attackingDie) {
+                messageEl.textContent = `Error: Your selected attacking die (ID: ${selectedAttackingDie.dieId}) was not found. Please re-select.`;
+                addGameLogMessage(`Strength Attack aborted: Attacking die not found in pool (ID: ${selectedAttackingDie.dieId}).`, 'error');
+                return;
+            }
+            if (!targetDie) {
+                messageEl.textContent = `Error: Opponent's selected target die (ID: ${selectedTargetDie.dieId}) was not found. Please re-select.`;
+                addGameLogMessage(`Strength Attack aborted: Target die not found in pool (ID: ${selectedTargetDie.dieId}).`, 'error');
                 return;
             }
             
+            playSound('hit');
+
             const originalAttackerValue = attackingDie.value;
             const originalTargetValue = targetDie.value;
 
@@ -1508,7 +1517,7 @@
             currentFormulaParts = [];
             renderMindAttackDisplay();
             const defenderPlayerIndex = selectedTargetDie.playerIndex;
-            const targetDie = players[defenderPlayerIndex].dice.find(d => d.id === selectedTargetDie.id);
+            const targetDie = players[defenderPlayerIndex].dice.find(d => d.id === selectedTargetDie.dieId); // FIX: Changed selectedTargetDie.id to selectedTargetDie.dieId
             messageEl.textContent = `${players[activePlayerIndex].name}, click your dice (A, B, C...) and operator buttons to build a formula that equals ${players[defenderPlayerIndex].name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
             addGameLogMessage(`${players[activePlayerIndex].name} initiates Mind Attack against ${players[defenderPlayerIndex].name}'s ${targetDie.type} (${targetDie.value}). Building formula.`, 'info');
             updateUI(); // This will make the input container visible
@@ -1554,7 +1563,8 @@
             const attacker = players[activePlayerIndex];
             const defenderIndex = selectedTargetDie.playerIndex;
             const defender = players[defenderIndex];
-            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.id);
+            // FIX: Changed selectedTargetDie.id to selectedTargetDie.dieId
+            const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId); 
 
             if (!targetDie) {
                 messageEl.textContent = "Error: Target die not found. Please re-select.";
@@ -1746,7 +1756,7 @@
                 
                 currentFormulaParts.push(value);
                 renderMindAttackDisplay();
-                const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.id);
+                const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
                 messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
                 updateUI();
             });
