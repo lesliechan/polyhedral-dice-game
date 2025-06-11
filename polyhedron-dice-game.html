@@ -353,22 +353,22 @@
         .die-item.d20 { background-color: #FADBD8; } /* Light Pink */
 
         /* Ensure text is dark on light backgrounds */
-        .die-item.d4 .die-value, .die-item.d4 .die-type,
-        .die-item.d6 .die-value, .die-item.d6 .die-type,
-        .die-item.d8 .die-value, .die-item.d8 .die-type,
-        .die-item.d10 .die-value, .die-item.d10 .die-type,
-        .die-item.d12 .die-value, .die-item.d12 .die-type,
-        .die-item.d20 .die-value, .die-item.d20 .die-type {
+        .die-item.d4 .die-value, .die-item.d4 .die-type, .die-item.d4 .die-label,
+        .die-item.d6 .die-value, .die-item.d6 .die-type, .die-item.d6 .die-label,
+        .die-item.d8 .die-value, .die-item.d8 .die-type, .die-item.d8 .die-label,
+        .die-item.d10 .die-value, .die-item.d10 .die-type, .die-item.d10 .die-label,
+        .die-item.d12 .die-value, .die-item.d12 .die-type, .die-item.d12 .die-label,
+        .die-item.d20 .die-value, .die-item.d20 .die-type, .die-item.d20 .die-label {
             color: #34495e; /* Dark text for all light backgrounds */
         }
 
-        /* UPDATED: Die label color, size, and position for better visibility & less clutter */
+        /* UPDATED: Dice label (bottom letter) positioning and size */
         .die-item .die-label {
-            color: #ffffff; /* White color for labels */
-            font-size: 0.8em; /* Smaller font size */
-            font-weight: bold; /* Keep bold */
+            /* color: #ffffff;  This is now handled by the .die-item.dXX rules for contrast */
+            font-size: 0.7em; /* Smaller font size, adjusted */
+            font-weight: bold;
             position: absolute;
-            bottom: 3px; /* Closer to the bottom edge */
+            bottom: 6px; /* Adjusted to be lower */
             left: 50%;
             transform: translateX(-50%); /* Centered horizontally */
             background-color: transparent; /* No background */
@@ -377,18 +377,18 @@
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Add shadow for readability */
         }
 
-        /* UPDATED: Die type position */
+        /* UPDATED: Die type (top dX) positioning and size */
         .die-type {
-            font-size: 0.7em;
+            font-size: 0.65em; /* Smaller font size, adjusted */
             position: absolute;
-            top: 3px; /* Closer to the top edge */
+            top: 6px; /* Adjusted to be lower */
             left: 50%;
             transform: translateX(-50%); /* Centered horizontally */
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* Add shadow for readability */
         }
 
         .die-value {
-            font-size: 1.5em;
+            font-size: 1.5em; /* The main large number */
         }
 
         /* Selected/highlighted states */
@@ -447,6 +447,13 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s ease;
         }
+        /* Captured die styling specific to type (for animation clone) */
+        .captured-die-item.d4 { background-color: #A3E4D7; color: #34495e; }
+        .captured-die-item.d6 { background-color: #F9E79F; color: #34495e; }
+        .captured-die-item.d8 { background-color: #D2B4DE; color: #34495e; }
+        .captured-die-item.d10 { background-color: #F5B7B1; color: #34495e; }
+        .captured-die-item.d12 { background-color: #A9CCE3; color: #34495e; }
+        .captured-die-item.d20 { background-color: #FADBD8; color: #34495e; }
 
         /* Controls for attack actions */
         .controls {
@@ -476,6 +483,14 @@
         button:disabled {
             background-color: #7f8c8d;
             cursor: not-allowed;
+        }
+
+        /* Back button specific styling */
+        #btnBack {
+            background-color: #34495e; /* A neutral color */
+        }
+        #btnBack:hover:not(:disabled) {
+            background-color: #4a627a;
         }
 
         #mindAttackInputContainer {
@@ -604,27 +619,6 @@
             animation: rotatePulse 0.6s ease-out forwards;
         }
 
-        .die-capture-animation {
-            position: fixed !important;
-            animation: captureMove 0.8s ease-in-out forwards;
-            z-index: 999;
-        }
-
-        @keyframes captureMove {
-            0% {
-                transform: translate(0, 0) scale(1);
-                opacity: 1;
-            }
-            70% {
-                transform: translate(var(--dx), var(--dy)) scale(0.6);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translate(var(--dx), var(--dy)) scale(0.3);
-                opacity: 0;
-            }
-        }
-
         /* --- MEDIA QUERIES FOR RESPONSIVENESS --- */
 
         /* For screens smaller than 1200px (primary breakpoint for side-log layout) */
@@ -700,13 +694,13 @@
 
             /* Adjust dice labels and types for smaller screens */
             .die-label {
-                font-size: 0.75em; /* Slightly smaller label */
-                bottom: 2px;
+                font-size: 0.7em; /* Slightly smaller label */
+                bottom: 4px; /* Adjusted */
             }
 
             .die-type {
                 font-size: 0.65em; /* Slightly smaller type */
-                top: 2px;
+                top: 4px; /* Adjusted */
             }
 
             button {
@@ -781,12 +775,12 @@
 
             /* Further adjust dice labels and types for very small screens */
             .die-label {
-                font-size: 0.7em;
-                bottom: 1px;
+                font-size: 0.65em;
+                bottom: 3px;
             }
             .die-type {
-                font-size: 0.6em;
-                top: 1px;
+                font-size: 0.55em;
+                top: 3px;
             }
 
             .die-value {
@@ -839,11 +833,12 @@
                 font-size: 0.9em;
             }
             .die-label {
-                font-size: 0.65em;
-                bottom: 0px;
+                font-size: 0.6em;
+                bottom: 2px;
             }
              .die-type {
-                font-size: 0.55em;
+                font-size: 0.5em;
+                top: 2px;
             }
              .player-panel h2 {
                 font-size: 1.2em;
@@ -901,7 +896,7 @@
             </div>
 
             <div class="controls">
-                <button id="btnStrengthAttack" disabled>Strength Attack</button>
+                <button id="btnBack" disabled>Back</button> <button id="btnStrengthAttack" disabled>Strength Attack</button>
                 <button id="btnMindAttack" disabled>Mind Attack</button>
                 <button id="btnPass" disabled>Pass</button>
             </div>
@@ -949,6 +944,7 @@
         const player1DicePoolEl = document.getElementById('player1-dice-pool');
         const player0CapturedDiceEl = document.getElementById('player0-captured-dice');
         const player1CapturedDiceEl = document.getElementById('player1-captured-dice');
+        const btnBack = document.getElementById('btnBack'); // NEW BACK BUTTON
         const btnStrengthAttack = document.getElementById('btnStrengthAttack');
         const btnMindAttack = document.getElementById('btnMindAttack');
         const btnPass = document.getElementById('btnPass');
@@ -979,7 +975,8 @@
         let activePlayerIndex;
         let selectedAttackingDie = null; // { playerIndex, dieId }
         let selectedTargetDie = null;   // { playerIndex, dieId }
-        let gamePhase = 'initialRoll'; // New game phases: 'initialRoll', 'selectAttacker', 'selectAttackType', 'selectTargetStrength', 'selectTargetMind', 'mindAttackInput', 'gameOver'
+        // NEW game phases: 'initialRoll', 'selectTarget', 'selectAttackerForTarget', 'selectAttackType', 'mindAttackInput', 'gameOver'
+        let gamePhase = 'initialRoll'; 
         let playing = false;
         let turnCounter = 0;
 
@@ -1058,6 +1055,7 @@
             gameLogEl.innerHTML = '';
             turnCounter = 0;
 
+            btnBack.disabled = true; // NEW: Back button disabled at start
             btnStrengthAttack.disabled = true;
             btnMindAttack.disabled = true;
             btnPass.disabled = true;
@@ -1160,7 +1158,7 @@
                     dieEl.dataset.dieIndex = index;
                     
                     let labelEl = dieEl.querySelector('.die-label');
-                    if (labelEl) {
+                    if (labelEl) { // Ensure label exists for update
                         labelEl.textContent = die.label;
                     }
                     existingDieElements.delete(die.id);
@@ -1178,6 +1176,7 @@
                     `;
                 }
                 
+                // Add correct class for die type (e.g., d4, d6)
                 dieEl.classList.remove(...DICE_TYPES.map(type => `d${type.substring(1)}`));
                 dieEl.classList.add(`d${die.type.substring(1)}`);
 
@@ -1185,24 +1184,34 @@
                 dieEl.classList.toggle('selected-attack', selectedAttackingDie && selectedAttackingDie.dieId === die.id);
                 dieEl.classList.toggle('selected-target', selectedTargetDie && selectedTargetDie.dieId === die.id);
 
+                // Reset interactivity styles
                 dieEl.classList.remove('mind-attack-selectable');
-                if (gamePhase === 'mindAttackInput' && playerIndex === activePlayerIndex) {
-                    // Only highlight player's own dice for formula input in mind attack
-                    dieEl.classList.add('mind-attack-selectable');
-                    dieEl.style.cursor = 'pointer';
-                } else if (playerIndex === activePlayerIndex && (gamePhase === 'selectAttacker' || gamePhase === 'selectAttackType')) {
-                     // Highlight active player's dice for selection
-                    dieEl.style.cursor = 'pointer';
-                    dieEl.style.opacity = '1';
-                } else if (playerIndex !== activePlayerIndex && (gamePhase === 'selectTargetStrength' || gamePhase === 'selectTargetMind')) {
-                    // Highlight opponent's dice for target selection
-                    dieEl.style.cursor = 'pointer';
-                    dieEl.style.opacity = '1';
-                } else {
-                    // Default for other states
-                    dieEl.style.opacity = '0.7';
-                    dieEl.style.cursor = 'default';
+                dieEl.style.cursor = 'default';
+                dieEl.style.opacity = '0.7';
+
+                // Apply interactivity and opacity based on current game phase
+                if (gamePhase === 'selectTarget') {
+                    if (playerIndex !== activePlayerIndex) { // Opponent's dice are clickable targets
+                        dieEl.style.cursor = 'pointer';
+                        dieEl.style.opacity = '1';
+                    }
+                } else if (gamePhase === 'selectAttackerForTarget') {
+                    if (playerIndex === activePlayerIndex) { // Active player's dice are clickable as attackers
+                        dieEl.style.cursor = 'pointer';
+                        dieEl.style.opacity = '1';
+                    }
+                } else if (gamePhase === 'mindAttackInput') {
+                    if (playerIndex === activePlayerIndex) { // Active player's dice are clickable for formula
+                        dieEl.classList.add('mind-attack-selectable'); // Special highlight for formula dice
+                        dieEl.style.cursor = 'pointer';
+                        dieEl.style.opacity = '1';
+                    }
                 }
+                // If a die is explicitly selected (selected-attack/selected-target), ensure it stays visible
+                if (dieEl.classList.contains('selected-attack') || dieEl.classList.contains('selected-target')) {
+                    dieEl.style.opacity = '1';
+                }
+
                 newOrderElements.push(dieEl);
             });
 
@@ -1218,7 +1227,9 @@
             players[playerIndex].captured.forEach(die => {
                 const capturedDieEl = document.createElement('div');
                 capturedDieEl.classList.add('captured-die-item');
-                capturedDieEl.textContent = die.type.toUpperCase();
+                // Add die type class to captured item for coloring
+                capturedDieEl.classList.add(`d${die.type.substring(1)}`);
+                capturedDieEl.textContent = die.type.toUpperCase(); // Show d4, d6 etc.
                 capturedEl.appendChild(capturedDieEl);
             });
         }
@@ -1242,13 +1253,14 @@
             mindAttackInputContainer.style.display = (gamePhase === 'mindAttackInput' ? 'flex' : 'none');
 
             // Reset button states
+            btnBack.disabled = true; // Default disabled
             btnStrengthAttack.disabled = true;
             btnMindAttack.disabled = true;
             btnPass.disabled = true;
-            btnSubmitMindAttack.disabled = true; // For Mind Attack Input
+            btnSubmitMindAttack.disabled = true;
 
-            // Messages
-            messageEl.textContent = ""; // Clear default message
+            // Clear previous message
+            messageEl.textContent = ""; 
 
             const currentAttacker = players[activePlayerIndex];
             const opponentPlayer = players[activePlayerIndex === 0 ? 1 : 0];
@@ -1257,32 +1269,38 @@
                 case 'initialRoll':
                     messageEl.textContent = "Rolling dice to determine first player...";
                     break;
-                case 'selectAttacker':
-                    messageEl.textContent = `${currentAttacker.name}, select one of your dice to initiate an attack.`;
-                    btnPass.disabled = false; // Player can always pass
+                case 'selectTarget': // NEW initial phase for player turn
+                    messageEl.textContent = `${currentAttacker.name}, select an opponent's die to target.`;
+                    btnPass.disabled = false;
+                    // Back button is disabled if nothing is selected yet to go back from
+                    // (Unless we want it to reset the whole turn, which we don't right now)
+                    btnBack.disabled = true; 
+                    break;
+                case 'selectAttackerForTarget': // NEW intermediate phase
+                    const targetDieObj = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                    messageEl.textContent = `${currentAttacker.name}, you are targeting ${opponentPlayer.name}'s ${targetDieObj.type.toUpperCase()} (${targetDieObj.value}). Now select one of your dice to attack with.`;
+                    btnPass.disabled = false;
+                    btnBack.disabled = false; // Can go back to selectTarget
                     break;
                 case 'selectAttackType':
                     const selectedAttackerDieObj = players[selectedAttackingDie.playerIndex].dice.find(d => d.id === selectedAttackingDie.dieId);
-                    messageEl.textContent = `${currentAttacker.name}, your ${selectedAttackerDieObj.type.toUpperCase()} (${selectedAttackerDieObj.value}) is selected. Choose Strength Attack or Mind Attack. You can also re-select your attacking die.`;
+                    const targetDieObj2 = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                    messageEl.textContent = `${currentAttacker.name}, your ${selectedAttackerDieObj.type.toUpperCase()} (${selectedAttackerDieObj.value}) is selected to attack ${opponentPlayer.name}'s ${targetDieObj2.type.toUpperCase()} (${targetDieObj2.value}). Choose Strength Attack or Mind Attack.`;
                     btnStrengthAttack.disabled = false;
                     btnMindAttack.disabled = false;
                     btnPass.disabled = false;
-                    break;
-                case 'selectTargetStrength':
-                    messageEl.textContent = `${currentAttacker.name}, select an opponent's die to target for Strength Attack.`;
-                    btnPass.disabled = false;
-                    break;
-                case 'selectTargetMind':
-                    messageEl.textContent = `${currentAttacker.name}, select an opponent's die to target for Mind Attack.`;
-                    btnPass.disabled = false;
+                    btnBack.disabled = false; // Can go back to selectAttackerForTarget
                     break;
                 case 'mindAttackInput':
                     const targetDieForFormula = opponentPlayer.dice.find(d => d.id === selectedTargetDie.dieId);
                     messageEl.textContent = `${currentAttacker.name}, build a formula to match ${opponentPlayer.name}'s ${targetDieForFormula.type.toUpperCase()} (${targetDieForFormula.value}).`;
                     btnSubmitMindAttack.disabled = currentFormulaParts.length === 0;
+                    btnBack.disabled = false; // Allow back from formula input
                     break;
                 case 'gameOver':
                     messageEl.textContent = "Game Over!";
+                    btnBack.disabled = true; // Cannot back out of game over
+                    btnPass.disabled = true;
                     break;
             }
         }
@@ -1317,9 +1335,9 @@
                 return;
             }
 
-            messageEl.textContent = `${players[activePlayerIndex].name} goes first! Select one of your dice to initiate an attack.`;
+            messageEl.textContent = `${players[activePlayerIndex].name} goes first! Select an opponent's die to target.`;
             addGameLogMessage(`Initial dice roll result: ${players[activePlayerIndex].name} starts.`, 'info');
-            gamePhase = 'selectAttacker'; // New starting phase
+            gamePhase = 'selectTarget'; // NEW: Start by selecting opponent's target
             turnCounter = 1;
             updateUI();
         }
@@ -1329,9 +1347,9 @@
             selectedTargetDie = null;
             activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
             turnCounter++;
-            messageEl.textContent = `${players[activePlayerIndex].name}'s turn. Select one of your dice to initiate an attack.`;
+            messageEl.textContent = `${players[activePlayerIndex].name}'s turn. Select an opponent's die to target.`;
             addGameLogMessage(`${players[activePlayerIndex].name}'s turn.`, 'info');
-            gamePhase = 'selectAttacker'; // Reset phase for new turn
+            gamePhase = 'selectTarget'; // NEW: Reset phase for new turn
             updateUI();
         }
 
@@ -1348,64 +1366,201 @@
             const clickedDie = players[clickedPlayerIndex].dice.find(die => die.id === clickedDieId);
             if (!clickedDie) return;
 
+            // Only allow clicks on dice if it's the active player's turn (except for target selection)
+            // Or if it's a mindAttackInput phase using own dice
+            if (gamePhase !== 'mindAttackInput' && clickedPlayerIndex !== activePlayerIndex && gamePhase !== 'selectTarget') {
+                messageEl.textContent = `It's not your turn, ${players[clickedPlayerIndex].name}.`;
+                updateUI();
+                return;
+            }
+
             playSound('click');
 
-            if (gamePhase === 'selectAttacker' || gamePhase === 'selectAttackType') {
-                if (clickedPlayerIndex === activePlayerIndex) {
-                    // Toggling attacking die selection
-                    if (selectedAttackingDie && selectedAttackingDie.dieId === clickedDieId) {
-                        selectedAttackingDie = null;
-                        selectedTargetDie = null; // Clear target too if attacking die is deselected
-                        gamePhase = 'selectAttacker'; // Deselect means go back to initial attacker selection
+            switch (gamePhase) {
+                case 'selectTarget':
+                    if (clickedPlayerIndex !== activePlayerIndex) { // Must be opponent's die
+                        selectedTargetDie = { playerIndex: clickedPlayerIndex, dieId: clickedDieId };
+                        selectedAttackingDie = null; // Ensure attacking die is null
+                        gamePhase = 'selectAttackerForTarget'; // NEW PHASE
+                        messageEl.textContent = `Target ${clickedDie.type.toUpperCase()} (${clickedDie.value}) selected. Now select one of your dice to attack with.`;
                     } else {
-                        selectedAttackingDie = { playerIndex: clickedPlayerIndex, dieId: clickedDieId };
-                        selectedTargetDie = null; // Always clear target when selecting attacker
-                        gamePhase = 'selectAttackType'; // Attacking die selected, now choose attack type
+                        messageEl.textContent = `Please select an opponent's die as a target, ${players[activePlayerIndex].name}.`;
                     }
-                } else {
-                    messageEl.textContent = `Please select one of your own dice to start, ${players[activePlayerIndex].name}.`;
-                }
-            } else if (gamePhase === 'selectTargetStrength' || gamePhase === 'selectTargetMind') {
-                if (clickedPlayerIndex !== activePlayerIndex) {
-                    selectedTargetDie = { playerIndex: clickedPlayerIndex, dieId: clickedDieId };
-                    // Auto-execute or move to formula input depending on attack type
-                    if (gamePhase === 'selectTargetStrength') {
-                        executeStrengthAttack(); // Now attack immediately after target selection for strength
-                    } else { // selectTargetMind
-                        gamePhase = 'mindAttackInput';
-                        updateUI(); // Important to update UI before starting mind attack input
-                        // (startMindAttackInput is no longer called here, updateUI will manage visiblity and message)
+                    break;
+
+                case 'selectAttackerForTarget': // NEW PHASE
+                    if (clickedPlayerIndex === activePlayerIndex) { // Must be player's own die
+                        // Toggling attacking die selection
+                        if (selectedAttackingDie && selectedAttackingDie.dieId === clickedDieId) {
+                            selectedAttackingDie = null;
+                            messageEl.textContent = `Attacking die deselected. Select another of your dice to attack with, or click Back to re-select target.`;
+                        } else {
+                            selectedAttackingDie = { playerIndex: clickedPlayerIndex, dieId: clickedDieId };
+                            gamePhase = 'selectAttackType';
+                            const attackerDie = players[activePlayerIndex].dice.find(d => d.id === selectedAttackingDie.dieId);
+                            const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                            messageEl.textContent = `Your ${attackerDie.type.toUpperCase()} (${attackerDie.value}) is selected to attack ${players[selectedTargetDie.playerIndex].name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}). Choose Strength Attack or Mind Attack.`;
+                        }
+                    } else {
+                        messageEl.textContent = `You have selected a target. Now select one of YOUR own dice to attack with.`;
                     }
-                } else {
-                    messageEl.textContent = `You must select an opponent's die as a target, ${players[activePlayerIndex].name}.`;
-                }
-            } else if (gamePhase === 'mindAttackInput') {
-                // Existing mind attack formula building logic
-                if (clickedPlayerIndex === activePlayerIndex) {
-                    const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
-                    // Allow die only if formula is empty or last part is operator or opening parenthesis
-                    const isValidPlacement = currentFormulaParts.length === 0 || OPERATORS.includes(lastPart) || lastPart === '(';
-                    
-                    if (!isValidPlacement) {
-                         messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
-                         updateUI();
-                         return;
+                    break;
+
+                case 'mindAttackInput':
+                    // Existing mind attack formula building logic
+                    if (clickedPlayerIndex === activePlayerIndex) {
+                        const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
+                        const isOperator = OPERATORS.includes(clickedDie.label);
+                        const isParenthesis = PARENTHESES.includes(clickedDie.label);
+                        const isLetter = ALPHA.includes(clickedDie.label);
+
+                        // Formula validation logic
+                        if (isLetter) { // A, B, C...
+                            // Cannot place a letter immediately after another letter or closing parenthesis
+                            if (ALPHA.includes(lastPart) || lastPart === ')') {
+                                messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
+                                updateUI();
+                                return;
+                            }
+                        } else if (isOperator) { // +, -, *, /
+                            // Cannot place operator if formula is empty or last part is operator or opening parenthesis
+                            if (currentFormulaParts.length === 0 || OPERATORS.includes(lastPart) || lastPart === '(') {
+                                messageEl.textContent = "Cannot have consecutive operators or an operator directly after an opening parenthesis.";
+                                updateUI();
+                                return;
+                            }
+                        } else if (isParenthesis) { // ( or )
+                            if (clickedDie.label === '(') { // Opening parenthesis
+                                // Cannot place '(' immediately after a letter or ')'
+                                if (ALPHA.includes(lastPart) || lastPart === ')') {
+                                    messageEl.textContent = "Please add an operator before an opening parenthesis.";
+                                    updateUI();
+                                    return;
+                                }
+                            } else if (clickedDie.label === ')') { // Closing parenthesis
+                                // Cannot place ')' if formula is empty, or after operator, or after opening parenthesis
+                                if (currentFormulaParts.length === 0 || OPERATORS.includes(lastPart) || lastPart === '(') {
+                                    messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
+                                    updateUI();
+                                    return;
+                                }
+                            }
+                        }
+
+                        currentFormulaParts.push(clickedDie.label);
+                        renderMindAttackDisplay();
+                        const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                        messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}). Click more dice or operators.`;
+                    } else {
+                        messageEl.textContent = "You can only use your own dice to build the formula.";
                     }
-                    currentFormulaParts.push(clickedDie.label);
-                    renderMindAttackDisplay();
-                    const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
-                    messageEl.textContent = `Building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}). Click more dice or operators.`;
-                } else {
-                    messageEl.textContent = "You can only use your own dice to build the formula.";
-                }
-            } else if (gamePhase === 'gameOver') {
-                messageEl.textContent = "Game is over. Start a new game!";
+                    break;
+                case 'gameOver':
+                    messageEl.textContent = "Game is over. Start a new game!";
+                    break;
             }
             updateUI(); // Always update UI after a click
         }
 
+        // NEW: Back button handler
+        function handleBack() {
+            playSound('click');
+            switch (gamePhase) {
+                case 'selectAttackType': // From choosing attack type, go back to selecting attacker
+                    selectedAttackingDie = null;
+                    gamePhase = 'selectAttackerForTarget';
+                    messageEl.textContent = `Attacking die deselected. Select another of your dice to attack with, or click Back to re-select target.`;
+                    break;
+                case 'selectAttackerForTarget': // From choosing attacker for target, go back to selecting target
+                    selectedTargetDie = null;
+                    gamePhase = 'selectTarget';
+                    messageEl.textContent = `Target deselected. Select an opponent's die to target.`;
+                    break;
+                case 'mindAttackInput': // From building formula, go back to selecting attack type
+                    currentFormulaParts = [];
+                    renderMindAttackDisplay(); // Clear formula display
+                    gamePhase = 'selectAttackType'; // Go back to choosing strength/mind attack
+                    // Message for selectAttackType will be set by updateUI
+                    break;
+                case 'selectTarget': // If at the very first step of turn, back does nothing or prompts
+                    messageEl.textContent = `You are at the start of your turn. You can Pass, or select a target.`;
+                    return; // Don't update UI if no change in state
+                default:
+                    // For other phases like initialRoll or gameOver, back does nothing
+                    return; 
+            }
+            updateUI();
+        }
+
+        // NEW: Capture animation function
+        function performCaptureAnimation(sourceDieEl, targetDieObject, defenderIndex) {
+            return new Promise(resolve => {
+                const defender = players[defenderIndex];
+                const targetDie = targetDieObject;
+
+                if (!sourceDieEl || !targetDie) {
+                    console.error("Capture animation error: source or target die element missing.");
+                    resolve(); 
+                    return;
+                }
+
+                const originalRect = sourceDieEl.getBoundingClientRect();
+                const targetCapturedEl = (defenderIndex === 0 ? player0CapturedDiceEl : player1CapturedDiceEl); // The captured pool div
+
+                const clone = sourceDieEl.cloneNode(true);
+                // Remove selection classes, add captured-die-item class
+                clone.classList.remove('die-item', 'selected-attack', 'selected-target', 'mind-attack-selectable', 'die-attacking-animation');
+                clone.classList.add('captured-die-item'); // Style the clone as a captured die
+                clone.classList.add(`d${targetDie.type.substring(1)}`); // Add die type class for styling
+
+                // Adjust clone's inner content for smaller captured size
+                clone.querySelector('.die-label')?.remove(); // Remove label
+                clone.querySelector('.die-value').textContent = targetDie.type.toUpperCase(); // Show type (d4, d6) in value
+                clone.querySelector('.die-type')?.remove(); // Remove type (already in value)
+                clone.style.fontSize = '0.8em'; // Smaller font for captured dice
+
+                // Set initial fixed position to exactly overlay the original die
+                clone.style.position = 'fixed';
+                clone.style.zIndex = '999';
+                clone.style.left = originalRect.left + 'px';
+                clone.style.top = originalRect.top + 'px';
+                clone.style.width = originalRect.width + 'px';
+                clone.style.height = originalRect.height + 'px';
+                clone.style.transform = 'scale(1)'; // Start at original size
+                clone.style.opacity = '1';
+
+                document.body.appendChild(clone);
+                sourceDieEl.style.visibility = 'hidden'; // Hide the original die immediately
+
+                playSound('ding');
+
+                // Force a reflow before applying new styles for transition to work
+                clone.offsetWidth; 
+
+                // Calculate a dynamic target position within the captured dice pool
+                // We'll aim for a random spot within the target pool's area
+                const targetRect = targetCapturedEl.getBoundingClientRect();
+                const randomX = targetRect.left + Math.random() * (targetRect.width - clone.offsetWidth);
+                const randomY = targetRect.top + Math.random() * (targetRect.height - clone.offsetHeight);
+
+                // Apply final styles with transition
+                clone.style.transition = 'left 0.8s ease-in-out, top 0.8s ease-in-out, transform 0.8s ease-in-out, opacity 0.8s ease-in-out';
+                clone.style.left = randomX + 'px';
+                clone.style.top = randomY + 'px';
+                clone.style.transform = 'scale(0.3)'; // Shrink to captured size
+                clone.style.opacity = '0'; // Fade out
+
+                clone.addEventListener('transitionend', () => {
+                    clone.remove();
+                    sourceDieEl.style.visibility = ''; // Make original visible again (will be removed by render)
+                    resolve();
+                }, { once: true });
+            });
+        }
+
+
         function executeStrengthAttack() {
-            // These should already be set correctly by handleDieClick in 'selectTargetStrength' phase
+            // These should already be set correctly by handleDieClick in 'selectAttackType' phase
             if (!selectedAttackingDie || !selectedTargetDie) {
                 messageEl.textContent = "Internal Error: Attack selection lost. Resetting turn.";
                 addGameLogMessage("Internal Error: Strength attack initiated without valid selections. Turn reset.", "error");
@@ -1424,21 +1579,21 @@
                 messageEl.textContent = `Error: Selected dice not found. Please re-select your attacking die.`;
                 addGameLogMessage(`Strength Attack aborted: One or both selected dice not found in pools. Attacker ID: ${selectedAttackingDie.dieId || 'N/A'}, Target ID: ${selectedTargetDie.dieId || 'N/A'}.`, 'error');
                 
-                selectedAttackingDie = null; // Reset to force re-selection of attacking die
+                selectedAttackingDie = null; 
                 selectedTargetDie = null;
-                gamePhase = 'selectAttacker';
+                gamePhase = 'selectTarget'; // Go back to start of turn
                 updateUI();
                 return;
             }
             
-            // --- NEW GAMEPLAY RULE FOR STRENGTH ATTACK ---
+            // --- NEW GAMEPLAY RULE FOR STRENGTH ATTACK (Invalid Move) ---
             if (attackingDie.value < targetDie.value) {
                 messageEl.textContent = `Your ${attackingDie.type.toUpperCase()} (${attackingDie.value}) is too low for ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}). Please re-select your attacking die.`;
                 addGameLogMessage(`${attacker.name}'s Strength Attack with ${attackingDie.type} (${attackingDie.value}) on ${defender.name}'s ${targetDie.type} (${targetDie.value}) is invalid (attacker < target). Player must re-select.`, 'error');
                 
                 selectedAttackingDie = null; // Reset to force re-selection of attacking die
-                selectedTargetDie = null; // Clear target too
-                gamePhase = 'selectAttacker'; // Force player to pick a new attacking die
+                // Keep selectedTargetDie, stay in selectAttackerForTarget phase
+                gamePhase = 'selectAttackerForTarget'; 
                 updateUI();
                 return; // DO NOT SWITCH TURN OR PROCEED WITH ATTACK
             }
@@ -1449,84 +1604,38 @@
             const originalAttackerValue = attackingDie.value;
             const originalTargetValue = targetDie.value;
 
-            const animationPromises = [];
-
-            const attackingDieEl = player0DicePoolEl.querySelector(`[data-die-id="${attackingDie.id}"]`) || player1DicePoolEl.querySelector(`[data-die-id="${attackingDie.id}"]`);
-            if (attackingDieEl) {
-                attackingDieEl.classList.add('die-attacking-animation');
+            // Attacking die animation
+            const attackerDieElInDOM = (activePlayerIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${attackingDie.id}"]`);
+            if (attackerDieElInDOM) {
+                attackerDieElInDOM.classList.add('die-attacking-animation');
                 playSound('reroll');
                 setTimeout(() => { // Remove animation class after its duration
-                    attackingDieEl.classList.remove('die-attacking-animation');
+                    attackerDieElInDOM.classList.remove('die-attacking-animation');
                 }, 600); // Matches animation duration
             }
-            // Re-roll here, but updateUI will show the new value after animations
-            reRollSpecificDice(activePlayerIndex, [attackingDie]);
+            reRollSpecificDice(activePlayerIndex, [attackingDie]); // Re-roll immediately
 
-            // Capture animation logic
-            const targetDieEl = player0DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`) || player1DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`);
+            // Capture animation
+            const targetDieEl = (defenderIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${targetDie.id}"]`);
 
-            if (targetDieEl) {
-                const originalRect = targetDieEl.getBoundingClientRect();
-                const targetCapturedEl = (defenderIndex === 0 ? player0CapturedDiceEl : player1CapturedDiceEl);
-                const targetRect = targetCapturedEl.getBoundingClientRect();
-                
-                const clone = targetDieEl.cloneNode(true);
-                clone.classList.add('die-capture-animation');
-                clone.style.position = 'fixed';
-                clone.style.left = originalRect.left + 'px';
-                clone.style.top = originalRect.top + 'px';
-                clone.style.width = originalRect.width + 'px';
-                clone.style.height = originalRect.height + 'px';
-                
-                const dx = (targetRect.left + targetRect.width / 2) - (originalRect.left + originalRect.width / 2);
-                const dy = (targetRect.top + targetRect.height / 2) - (originalRect.top + originalRect.height / 2);
+            performCaptureAnimation(targetDieEl, targetDie, defenderIndex).then(() => {
+                // This block executes AFTER the capture animation completes
+                defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
+                attacker.captured.push(targetDie);
+                attacker.score++;
 
-                clone.style.setProperty('--dx', `${dx}px`);
-                clone.style.setProperty('--dy', `${dy}px`);
-
-                document.body.appendChild(clone);
-                targetDieEl.style.visibility = 'hidden'; // Hide original during animation
-
-                playSound('ding');
-
-                animationPromises.push(new Promise(resolve => {
-                    clone.addEventListener('animationend', () => {
-                        clone.remove();
-                        targetDieEl.style.visibility = ''; // Make original visible again if needed (it will be removed later)
-                        resolve();
-                    }, { once: true });
-                }));
-            }
-
-            // Game state updates (capture, score)
-            defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
-            attacker.captured.push(targetDie);
-            attacker.score++;
-
-            let attackMessage = `${attacker.name} performs Strength Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${originalTargetValue}) USING ${attacker.name}'s ${attackingDie.type} dice (value ${originalAttackerValue}). Captures ${defender.name}'s ${targetDie.type} dice.`;
-            
-            messageEl.textContent = `${attacker.name}'s ${attackingDie.type.toUpperCase()} (${originalAttackerValue}) captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${originalTargetValue})!`;
-
-            Promise.all(animationPromises).then(() => {
+                let attackMessage = `${attacker.name} performs Strength Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${originalTargetValue}) USING ${attacker.name}'s ${attackingDie.type} dice (value ${originalAttackerValue}). Captures ${defender.name}'s ${targetDie.type} dice.`;
                 attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice rerolled to value ${attackingDie.value}.`;
                 addGameLogMessage(attackMessage, 'info');
+
+                messageEl.textContent = `${attacker.name}'s ${attackingDie.type.toUpperCase()} (${originalAttackerValue}) captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${originalTargetValue})!`;
                 checkWinCondition();
                 if (playing) {
                     switchTurn(); // Only switch turn on successful (valid) attack
                 }
             });
-            // Fallback for no animations
-            if (animationPromises.length === 0) {
-                 attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice rerolled to value ${attackingDie.value}.`;
-                 addGameLogMessage(attackMessage, 'info');
-                 checkWinCondition();
-                if (playing) {
-                    switchTurn();
-                }
-            }
         }
 
-        // Removed startMindAttackInput as a separate call, now handled by updateUI visibility
         function executeMindAttack() {
             const formula = currentFormulaParts.join('');
             if (!formula) {
@@ -1544,7 +1653,7 @@
                 addGameLogMessage("Error: Target die for mind attack not found. Turn reset.", "error");
                 selectedAttackingDie = null;
                 selectedTargetDie = null;
-                gamePhase = 'selectAttacker';
+                gamePhase = 'selectTarget'; // Go back to start of turn
                 updateUI();
                 return;
             }
@@ -1583,23 +1692,11 @@
                 return; // Do not switch turn
             }
 
-            // --- NEW GAMEPLAY RULE FOR MIND ATTACK ---
-            if (result !== targetDie.value) {
-                messageEl.textContent = `${attacker.name}'s Mind Attack failed. Formula (${formula}) = ${result}, but target was ${targetDie.value}. Please try again!`;
-                addGameLogMessage(`${attacker.name}'s Mind Attack with formula ${formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice)} resulted in ${result}, but target was ${targetDie.value}. Try again.`, 'error', true);
-                
-                // Force re-attempt: clear formula, keep selection, stay in phase
-                currentFormulaParts = [];
-                renderMindAttackDisplay();
-                reRollSpecificDice(activePlayerIndex, diceUsedInFormula); // Dice used are still rerolled
-                updateUI(); // Refresh UI to show cleared formula
-                return; // DO NOT SWITCH TURN OR PROCEED WITH CAPTURE
-            }
-            // --- END NEW RULE ---
-
+            // Re-roll dice used in formula for attacking player (regardless of success for Mind Attack)
             const animationPromises = [];
             diceUsedInFormula.forEach(die => {
-                const dieEl = player0DicePoolEl.querySelector(`[data-die-id="${die.id}"]`) || player1DicePoolEl.querySelector(`[data-die-id="${die.id}"]`);
+                // Ensure we get the DOM element from the correct player's pool
+                const dieEl = (activePlayerIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${die.id}"]`);
                 if (dieEl) {
                     dieEl.classList.add('die-attacking-animation');
                     animationPromises.push(new Promise(resolve => {
@@ -1611,68 +1708,49 @@
                 }
             });
             playSound('reroll');
+            reRollSpecificDice(activePlayerIndex, diceUsedInFormula); // Re-roll immediately
 
-            const diceUsedInfo = diceUsedInFormula.map(d => `${d.type} dice value ${d.value}`).join(', ');
-            const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
-            let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) USING ${attacker.name}'s ${diceUsedInfo} with the EQUATION ${formattedFormulaHtml}.`;
+            // --- NEW GAMEPLAY RULE FOR MIND ATTACK (Retry Formula) ---
+            if (result !== targetDie.value) {
+                messageEl.textContent = `${attacker.name}'s Mind Attack failed. Formula (${formula}) = ${result}, but target was ${targetDie.value}. Please try again!`;
+                addGameLogMessage(`${attacker.name}'s Mind Attack with formula ${formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice)} resulted in ${result}, but target was ${targetDie.value}. Try again.`, 'error', true);
+                
+                // Force re-attempt: clear formula, keep selection, stay in mindAttackInput phase
+                currentFormulaParts = [];
+                renderMindAttackDisplay();
+                // Dice were already rerolled above
+                updateUI(); 
+                return; // DO NOT SWITCH TURN OR PROCEED WITH CAPTURE
+            }
+            // --- END NEW RULE ---
 
-            Promise.all(animationPromises).then(() => {
-                // If we reach here, it means the formula matched
-                const targetDieEl = player0DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`) || player1DicePoolEl.querySelector(`[data-die-id="${targetDie.id}"]`);
-                if (targetDieEl) { // Capture animation if target element exists
-                    const originalRect = targetDieEl.getBoundingClientRect();
-                    const targetCapturedEl = (defenderIndex === 0 ? player0CapturedDiceEl : player1CapturedDiceEl);
-                    const targetRect = targetCapturedEl.getBoundingClientRect();
-                    
-                    const clone = targetDieEl.cloneNode(true);
-                    clone.classList.add('die-capture-animation');
-                    clone.style.position = 'fixed';
-                    clone.style.left = originalRect.left + 'px';
-                    clone.style.top = originalRect.top + 'px';
-                    clone.style.width = originalRect.width + 'px';
-                    clone.style.height = originalRect.height + 'px';
-                    
-                    const dx = (targetRect.left + targetRect.width / 2) - (originalRect.left + originalRect.width / 2);
-                    const dy = (targetRect.top + targetRect.height / 2) - (originalRect.top + originalRect.height / 2);
-
-                    clone.style.setProperty('--dx', `${dx}px`);
-                    clone.style.setProperty('--dy', `${dy}px`);
-
-                    document.body.appendChild(clone);
-                    targetDieEl.style.visibility = 'hidden';
-
-                    playSound('ding');
-
-                    return new Promise(resolve => { // Return a promise for the capture animation
-                        clone.addEventListener('animationend', () => {
-                            clone.remove();
-                            resolve();
-                        }, { once: true });
-                    });
-                } else {
-                    return Promise.resolve(); // No animation if element not found
-                }
+            // If formula matches, proceed with capture animation and game state update
+            const targetDieEl = (defenderIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${targetDie.id}"]`);
+            
+            Promise.all(animationPromises).then(() => { // Ensure reroll animations finish before capture
+                return performCaptureAnimation(targetDieEl, targetDie, defenderIndex);
             }).then(() => {
+                // This block executes AFTER the capture animation completes
                 defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
                 attacker.captured.push(targetDie);
                 attacker.score++;
-                attackMessage += ` Captures ${defender.name}'s ${targetDie.type} dice.`;
-                messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula (${formula}) = ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
 
-                reRollSpecificDice(activePlayerIndex, diceUsedInFormula); // Reroll after capture
+                const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
+                let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) with the EQUATION ${formattedFormulaHtml}. Captures ${defender.name}'s ${targetDie.type} dice.`;
                 const rerolledDiceInfo = diceUsedInFormula.map(d => `${d.type} dice rerolled to value ${d.value}`).join(', ');
                 if (rerolledDiceInfo) {
                     attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
                 }
-                addGameLogMessage(attackMessage, 'info', true); // isHtml = true
+                addGameLogMessage(attackMessage, 'info', true);
+
+                messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula (${formula}) = ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
 
                 currentFormulaParts = [];
                 renderMindAttackDisplay();
-                gamePhase = 'playerTurn'; // Transition to next player's turn on success
-
+                
                 checkWinCondition();
                 if (playing) {
-                    switchTurn();
+                    switchTurn(); // Switches to selectTarget
                 }
             });
         }
@@ -1754,25 +1832,21 @@
         btnNewGame.addEventListener('click', initGame);
         btnPass.addEventListener('click', handlePass);
         btnPlayAgain.addEventListener('click', initGame);
+        btnBack.addEventListener('click', handleBack); // NEW: Back button listener
 
-        // Attack type selection buttons - now transition phase
+        // Attack type selection buttons - now execute or transition to formula input
         btnStrengthAttack.addEventListener('click', () => {
-            if (gamePhase === 'selectAttackType' && selectedAttackingDie) {
+            if (gamePhase === 'selectAttackType' && selectedAttackingDie && selectedTargetDie) {
                 playSound('click');
-                gamePhase = 'selectTargetStrength';
-                selectedTargetDie = null; // Clear any previous target selection for this new attack
-                messageEl.textContent = `${players[activePlayerIndex].name}, you chose Strength Attack. Now select an opponent's die to target.`;
-                updateUI();
+                executeStrengthAttack(); // Execute directly
             }
         });
 
         btnMindAttack.addEventListener('click', () => {
-            if (gamePhase === 'selectAttackType' && selectedAttackingDie) {
+            if (gamePhase === 'selectAttackType' && selectedAttackingDie && selectedTargetDie) {
                 playSound('click');
-                gamePhase = 'selectTargetMind';
-                selectedTargetDie = null; // Clear any previous target selection for this new attack
-                messageEl.textContent = `${players[activePlayerIndex].name}, you chose Mind Attack. Now select an opponent's die to target.`;
-                updateUI();
+                gamePhase = 'mindAttackInput'; // Transition to formula input
+                updateUI(); // Update UI to show formula input container
             }
         });
 
@@ -1793,39 +1867,39 @@
                 const lastPart = currentFormulaParts[currentFormulaParts.length - 1];
 
                 const isOperator = OPERATORS.includes(value);
-                const lastIsOperator = OPERATORS.includes(lastPart);
-                const isParen = PARENTHESES.includes(value);
-                const lastIsParen = PARENTHESES.includes(lastPart);
-                const lastIsLetter = ALPHA.includes(lastPart);
+                const isParenthesis = PARENTHESES.includes(value);
+                const isLetter = ALPHA.includes(value);
 
-                // Validation rules for formula building
-                if (currentFormulaParts.length === 0) {
-                    if (isOperator || value === ')') {
-                        messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
-                        updateUI(); // Refresh message
+                // Formula validation rules for buttons
+                if (isLetter) { // A, B, C...
+                    // Cannot place a letter immediately after another letter or closing parenthesis
+                    if (ALPHA.includes(lastPart) || lastPart === ')') {
+                        messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
+                        updateUI();
                         return;
                     }
-                } else {
-                    if (isOperator && (lastIsOperator || lastPart === '(')) {
+                } else if (isOperator) { // +, -, *, /
+                    // Cannot place operator if formula is empty or last part is operator or opening parenthesis
+                    if (currentFormulaParts.length === 0 || OPERATORS.includes(lastPart) || lastPart === '(') {
                         messageEl.textContent = "Cannot have consecutive operators or an operator directly after an opening parenthesis.";
-                        updateUI(); // Refresh message
+                        updateUI();
                         return;
                     }
-                    if (value === '(' && lastIsLetter) {
-                        messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
-                        updateUI(); // Refresh message
-                        return;
-                        
-                    }
-                    if (value === ')' && lastIsOperator) {
-                        messageEl.textContent = "Cannot close parenthesis immediately after an operator.";
-                        updateUI(); // Refresh message
-                        return;
-                    }
-                    if (lastPart === '(' && value === ')') {
-                        messageEl.textContent = "Cannot have empty parentheses.";
-                        updateUI(); // Refresh message
-                        return;
+                } else if (isParenthesis) { // ( or )
+                    if (value === '(') { // Opening parenthesis
+                         // Cannot place '(' immediately after a letter or ')'
+                        if (ALPHA.includes(lastPart) || lastPart === ')') {
+                            messageEl.textContent = "Please add an operator before an opening parenthesis.";
+                            updateUI();
+                            return;
+                        }
+                    } else if (value === ')') { // Closing parenthesis
+                        // Cannot place ')' if formula is empty, or after operator, or after opening parenthesis
+                        if (currentFormulaParts.length === 0 || OPERATORS.includes(lastPart) || lastPart === '(') {
+                            messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
+                            updateUI();
+                            return;
+                        }
                     }
                 }
                 
