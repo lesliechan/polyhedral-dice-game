@@ -320,7 +320,8 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 10px;
+            /* UPDATED: Increased gap to accommodate floating labels */
+            gap: 15px; 
             min-height: 80px;
         }
 
@@ -340,7 +341,7 @@
             border: 2px solid transparent;
             z-index: 1;
             box-sizing: border-box;
-            overflow: hidden; /* Crucial for overlapping elements not to break layout */
+            /* REMOVED: overflow: hidden; to allow labels to float outside die boundaries */
         }
 
         /* Dice Colors */
@@ -864,10 +865,8 @@
     </style>
 </head>
 <body>
-    <!-- Game Header (Menu Bar) -->
     <div class="game-header">
         <h1>Polyhedral Dice Game</h1>
-        <!-- NEW: Row for Menu Bar Content -->
         <div class="header-content-row">
             <div class="header-left">
                 <button id="btnNewGame">New Game</button>
@@ -883,7 +882,6 @@
                 </div>
             </div>
             <div class="header-right">
-                <!-- NEW: Dice Legend is now part of header-right -->
                 <div class="dice-legend">
                     <div class="legend-item"><span class="legend-color-box d4"></span> d4</div>
                     <div class="legend-item"><span class="legend-color-box d6"></span> d6</div>
@@ -896,7 +894,6 @@
         </div>
     </div>
 
-    <!-- Main content wrapper -->
     <div class="main-content-wrapper" id="main-content-wrapper">
         <div class="game-container" id="game-container">
             <div class="players-area">
@@ -916,10 +913,8 @@
                 </div>
             </div>
 
-            <!-- Player Action Buttons -->
             <div class="controls">
-                <button id="btnBack" disabled>Back</button> <!-- NEW BACK BUTTON -->
-                <button id="btnStrengthAttack" disabled>Strength Attack</button>
+                <button id="btnBack" disabled>Back</button> <button id="btnStrengthAttack" disabled>Strength Attack</button>
                 <button id="btnMindAttack" disabled>Mind Attack</button>
                 <button id="btnPass" disabled>Pass</button>
             </div>
@@ -942,22 +937,17 @@
             <div class="message" id="message"></div>
         </div>
 
-        <!-- Game Log Container -->
         <div class="game-log-container" id="game-log-container">
             <h3>Game Log
-                <!-- Toggle Switch for Log Position -->
                 <label class="switch">
                     <input type="checkbox" id="log-position-toggle">
                     <span class="slider"></span>
                 </label>
             </h3>
             <div id="game-log">
-                <!-- Log entries will be appended here -->
-            </div>
+                </div>
         </div>
-    </div> <!-- End main-content-wrapper -->
-
-    <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
+    </div> <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
         <p id="gameOverMessage"></p>
         <button id="btnPlayAgain">Play Again</button>
     </div>
@@ -1007,6 +997,7 @@
         let gamePhase = 'initialRoll'; 
         let playing = false;
         let turnCounter = 0;
+        let roundCounter = 0; // NEW: Track rounds
 
         let currentFormulaParts = [];
 
@@ -1030,13 +1021,13 @@
         // IMPORTANT: Update 'your-repo-name' with your actual GitHub repository name!
         // Example: If your repo is 'my-awesome-game', then '/my-awesome-game/sounds/...'
         const sounds = {
-            roll: new Audio('/polyhedral-dice-game/sounds/roll.mp3'),
-            click: new Audio('/polyhedral-dice-game/sounds/click.mp3'),
-            hit: new Audio('/polyhedral-dice-game/sounds/hit.mp3'),
-            zap: new Audio('/polyhedral-dice-game/sounds/zap.mp3'),
-            ding: new Audio('/polyhedral-dice-game/sounds/ding.mp3'),
-            reroll: new Audio('/polyhedral-dice-game/sounds/reroll.mp3'),
-            win: new Audio('/polyhedral-dice-game/sounds/win.mp3')
+            roll: new Audio('/polyhedron-dice-game/sounds/roll.mp3'),
+            click: new Audio('/polyhedron-dice-game/sounds/click.mp3'),
+            hit: new Audio('/polyhedron-dice-game/sounds/hit.mp3'),
+            zap: new Audio('/polyhedron-dice-game/sounds/zap.mp3'),
+            ding: new Audio('/polyhedron-dice-game/sounds/ding.mp3'),
+            reroll: new Audio('/polyhedron-dice-game/sounds/reroll.mp3'),
+            win: new Audio('/polyhedron-dice-game/sounds/win.mp3')
         };
 
         function playSound(soundName) {
@@ -1047,21 +1038,21 @@
         }
 
         // --- Game Initialization ---
-        function initGame() {
+        function initGame(resetScores = true) { // Added parameter to control score reset
             players = [
                 {
                     name: 'Player 1',
                     dice: [],
                     captured: [],
                     initialRollValues: [],
-                    score: 0
+                    score: resetScores ? 0 : players[0]?.score || 0 // Only reset if specified, else keep current or default to 0
                 },
                 {
                     name: 'Player 2',
                     dice: [],
                     captured: [],
                     initialRollValues: [],
-                    score: 0
+                    score: resetScores ? 0 : players[1]?.score || 0 // Only reset if specified, else keep current or default to 0
                 }
             ];
 
@@ -1076,12 +1067,13 @@
             
             messageEl.textContent = '';
             mindAttackInputContainer.style.display = 'none'; // Ensure hidden initially
-            gameOverOverlay.style.display = 'none';
+            gameOverOverlay.style.display = 'none'; // Keep hidden, it's for series end
 
             currentFormulaParts = [];
             renderMindAttackDisplay();
-            gameLogEl.innerHTML = '';
+            gameLogEl.innerHTML = ''; // Clear log on full new game
             turnCounter = 0;
+            roundCounter = 0; // Reset round counter on full new game
 
             btnBack.disabled = true; // NEW: Back button disabled at start
             btnStrengthAttack.disabled = true;
@@ -1112,7 +1104,7 @@
             const logEntry = document.createElement('div');
             logEntry.classList.add('log-entry', type);
             
-            const prefix = turnCounter > 0 ? `Turn ${turnCounter}: ` : `Game: `;
+            const prefix = roundCounter > 0 ? `R${roundCounter} T${turnCounter}: ` : `Game: `;
             const prefixSpan = document.createElement('span');
             prefixSpan.textContent = prefix;
             logEntry.appendChild(prefixSpan);
@@ -1140,7 +1132,7 @@
         }
 
         function rollAllPlayerDice(playerIndex) {
-            players[playerIndex].dice = [];
+            players[playerIndex].dice = []; // Clear existing dice
             players[playerIndex].initialRollValues = [];
             DICE_TYPES.forEach(type => {
                 const value = rollDie(type);
@@ -1158,6 +1150,7 @@
         }
 
         function assignDiceLabels(playerIndex) {
+            // Sort dice by value to ensure consistent labeling
             players[playerIndex].dice.sort((a, b) => a.value - b.value);
             players[playerIndex].dice.forEach((die, index) => {
                 die.label = ALPHA[index];
@@ -1361,11 +1354,13 @@
                 setTimeout(determineFirstPlayer, 1500);
                 return;
             }
+            
+            roundCounter++; // Increment round counter when a new round starts
+            turnCounter = 1; // Reset turn counter for the new round
 
-            messageEl.textContent = `${players[activePlayerIndex].name} goes first! Select an opponent's die to target.`;
-            addGameLogMessage(`Initial dice roll result: ${players[activePlayerIndex].name} starts.`, 'info');
+            messageEl.textContent = `${players[activePlayerIndex].name} goes first in Round ${roundCounter}! Select an opponent's die to target.`;
+            addGameLogMessage(`Round ${roundCounter} started. ${players[activePlayerIndex].name} starts.`, 'info');
             gamePhase = 'selectTarget'; // Start by selecting opponent's target
-            turnCounter = 1;
             updateUI();
         }
 
@@ -1374,7 +1369,7 @@
             selectedTargetDie = null;
             activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
             turnCounter++;
-            messageEl.textContent = `${players[activePlayerIndex].name}'s turn. Select an opponent's die to target.`;
+            messageEl.textContent = `${players[activePlayerIndex].name}'s turn (Round ${roundCounter}). Select an opponent's die to target.`;
             addGameLogMessage(`${players[activePlayerIndex].name}'s turn.`, 'info');
             gamePhase = 'selectTarget'; // Reset phase for new turn
             updateUI();
@@ -1666,16 +1661,17 @@
                 // This block executes AFTER the capture animation completes
                 defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
                 attacker.captured.push(targetDie);
-                attacker.score++;
-
+                // attacker.score++; // REMOVED: Score only on round win
+                
                 let attackMessage = `${attacker.name} performs Strength Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${originalTargetValue}) USING ${attacker.name}'s ${attackingDie.type} dice (value ${originalAttackerValue}). Captures ${defender.name}'s ${targetDie.type} dice.`;
                 attackMessage += ` ${attacker.name}'s ${attackingDie.type} dice rerolled to value ${attackingDie.value}.`;
                 addGameLogMessage(attackMessage, 'info');
 
                 messageEl.textContent = `${attacker.name}'s ${attackingDie.type.toUpperCase()} (${originalAttackerValue}) captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${originalTargetValue})!`;
-                checkWinCondition();
-                if (playing) {
-                    switchTurn(); // Only switch turn on successful (valid) attack
+                
+                checkWinCondition(); // Check if round ends
+                if (playing) { // 'playing' would be false only if a series winner was decided
+                    switchTurn(); // Only switch turn if round continues
                 }
             });
         }
@@ -1777,7 +1773,7 @@
                 // This block executes AFTER the capture animation completes
                 defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
                 attacker.captured.push(targetDie);
-                attacker.score++;
+                // attacker.score++; // REMOVED: Score only on round win
 
                 const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
                 let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) with the EQUATION ${formattedFormulaHtml}. Captures ${defender.name}'s ${targetDie.type} dice.`;
@@ -1792,8 +1788,8 @@
                 currentFormulaParts = [];
                 renderMindAttackDisplay();
                 
-                checkWinCondition();
-                if (playing) {
+                checkWinCondition(); // Check if round ends
+                if (playing) { // 'playing' would be false only if a series winner was decided
                     switchTurn(); // Switches to selectTarget
                 }
             });
@@ -1802,24 +1798,47 @@
         function handlePass() {
             messageEl.textContent = `${players[activePlayerIndex].name} chose to pass.`;
             addGameLogMessage(`${players[activePlayerIndex].name} passes their turn.`, 'info');
+            currentFormulaParts = []; // Clear formula if passing from mind attack input
+            renderMindAttackDisplay();
             switchTurn();
         }
 
         function checkWinCondition() {
-            const opponentPlayer = players[activePlayerIndex === 0 ? 1 : 0];
-            if (opponentPlayer.dice.length === 0) {
-                playing = false;
-                gameOverOverlay.style.display = 'flex';
-                const winnerName = players[activePlayerIndex].name;
-                const loserName = opponentPlayer.name;
-                gameOverMessageEl.textContent = `${winnerName} has captured all of ${loserName}'s dice and WINS THE GAME! Final Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`;
-                player0Panel.classList.remove('player--active');
-                player1Panel.classList.remove('player--active');
-                document.querySelector(`.player--${activePlayerIndex}`).classList.add('player--winner');
+            const attacker = players[activePlayerIndex];
+            const defenderIndex = activePlayerIndex === 0 ? 1 : 0;
+            const defender = players[defenderIndex];
+
+            // NEW: Only increment score if opponent has no dice left (round win)
+            if (defender.dice.length === 0) {
+                attacker.score++; // Increment score for winning the round
+                updateScoreDisplay();
                 playSound('win');
-                addGameLogMessage(`${winnerName} WINS THE GAME! Final Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`, 'win');
-                gamePhase = 'gameOver'; // Set game phase to game over
+                
+                const winnerName = attacker.name;
+                const loserName = defender.name;
+                
+                // Keep 'playing' true as the game continues in rounds
+                // Do NOT show gameOverOverlay, as it's for series end
+
+                addGameLogMessage(`${winnerName} wins Round ${roundCounter}! All of ${loserName}'s dice captured. Current Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`, 'win');
+                messageEl.textContent = `${winnerName} wins Round ${roundCounter}! Starting a new round...`;
+
+                // Reset game state for a new round
+                players[0].dice = [];
+                players[1].dice = [];
+                players[0].captured = [];
+                players[1].captured = [];
+                selectedAttackingDie = null;
+                selectedTargetDie = null;
+                currentFormulaParts = [];
+                renderMindAttackDisplay();
+                updateUI(); // Render empty pools and cleared state
+
+                setTimeout(() => { // Small delay before starting next round
+                    determineFirstPlayer(); // Start a new round with fresh dice pools
+                }, 2000); // 2 second delay
             }
+            // If defender still has dice, game continues, no score change.
         }
 
         // Layout preference functions
@@ -1873,9 +1892,9 @@
         }
 
         // --- Event Listeners ---
-        btnNewGame.addEventListener('click', initGame);
+        btnNewGame.addEventListener('click', () => initGame(true)); // Reset scores on full new game
         btnPass.addEventListener('click', handlePass);
-        btnPlayAgain.addEventListener('click', initGame);
+        btnPlayAgain.addEventListener('click', () => initGame(true)); // Reset scores on full new game from game over screen
         btnBack.addEventListener('click', handleBack); // NEW: Back button listener
 
         // Attack type selection buttons - now execute or transition to formula input
@@ -1980,7 +1999,7 @@
         });
 
         // Initial game setup
-        initGame();
+        initGame(true); // Start a brand new game with scores reset
     </script>
 </body>
 </html>
