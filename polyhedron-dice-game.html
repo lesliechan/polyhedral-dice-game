@@ -498,6 +498,15 @@
         .die-item.mind-attack-selectable .die-value {
              font-weight: bold;
         }
+        /* Added for disabling selected dice in mind attack formula */
+        .die-item.mind-attack-selectable.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none; /* Prevent clicks */
+            box-shadow: none;
+            border-color: #7f8c8d;
+        }
+
 
         .captured-die-item {
             width: 30px;
@@ -617,7 +626,7 @@
         /* Modal Header (Target Die Display) */
         .modal-header-target {
             background-color: #2c3e50;
-            padding: 5px; /* Reduced padding */
+            padding: 5px; /* Reduced padding for tighter fit */
             border-radius: 8px;
             text-align: center;
             color: #ecf0f1;
@@ -626,7 +635,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px; /* Reduced gap */
+            gap: 2px; /* Reduced gap for tighter fit */
         }
         .modal-header-target .target-die-display .die-item {
             width: 60px; /* Reduced size */
@@ -1299,6 +1308,8 @@
         let roundCounter = 0; // NEW: Track rounds
 
         let currentFormulaParts = []; // Stores die labels (A,B,C) and operators (+, -, *, /, (, ))
+        // NEW: Map to keep track of dice currently used in the mind attack formula
+        let usedDiceInCurrentFormula = new Map(); // Map: dieId -> dieLabel (e.g., 'd4-123' -> 'A')
 
         const DICE_TYPES = ['d4', 'd6', 'd8', 'd10', 'd12', 'd20'];
         const OPERATORS = ['+', '-', '*', '/'];
@@ -1317,17 +1328,20 @@
 
 
         // --- Sound Effects ---
-        // IMPORTANT: Update 'your-repo-name' with your actual GitHub repository name!
-        // Example: If your repo is 'my-awesome-game', then '/my-awesome-game/sounds/...'
+        // Important: For sounds to play in a web browser, they must be served from a web server
+        // or a CDN accessible by the browser. If you run this file locally, browser security
+        // policies might prevent sounds from loading or playing (e.g., "NotAllowedError" or "NotSupportedError").
+        // The paths below are relative to your game's root directory if you host your sounds there.
         const sounds = {
-            roll: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/roll.mp3'),
-            click: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/click.mp3'),
-            hit: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/hit.mp3'),
-            zap: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/zap.mp3'),
-            ding: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/ding.mp3'),
-            reroll: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/reroll.mp3'),
-            win: new Audio('https://raw.githubusercontent.com/google-gemini/polyhedron-dice-game/main/sounds/win.mp3')
+            roll: new Audio('/polyhedron-dice-game/sounds/roll.mp3'),
+            click: new Audio('/polyhedron-dice-game/sounds/click.mp3'),
+            hit: new Audio('/polyhedron-dice-game/sounds/hit.mp3'),
+            zap: new Audio('/polyhedron-dice-game/sounds/zap.mp3'),
+            ding: new Audio('/polyhedron-dice-game/sounds/ding.mp3'),
+            reroll: new Audio('/polyhedron-dice-game/sounds/reroll.mp3'),
+            win: new Audio('/polyhedron-dice-game/sounds/win.mp3')
         };
+
 
         function playSound(soundName) {
             console.log("Attempting to play sound:", soundName);
@@ -1381,6 +1395,7 @@
             gameOverOverlay.style.display = 'none'; // Keep hidden, it's for series end
 
             currentFormulaParts = [];
+            usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on new game
             gameLogEl.innerHTML = ''; // Clear log on full new game
             turnCounter = 0;
             roundCounter = 0; // Reset round counter on full new game
@@ -1594,6 +1609,7 @@
 
             currentFormulaParts.forEach(part => {
                 if (ALPHA.includes(part)) { // It's a die label
+                    // Find the die that corresponds to the label in the formula
                     const die = activePlayerDice.find(d => d.label === part);
                     if (die) {
                         const formulaDieEl = document.createElement('div');
@@ -1663,7 +1679,7 @@
             // Only attempt to get currentAttacker and opponentPlayer if activePlayerIndex is defined
             let currentAttacker = null;
             let opponentPlayer = null;
-            if (activePlayerIndex !== undefined) {
+            if (activePlayerIndex !== undefined && players[activePlayerIndex]) {
                 currentAttacker = players[activePlayerIndex];
                 opponentPlayer = players[activePlayerIndex === 0 ? 1 : 0];
             }
@@ -1778,6 +1794,9 @@
             console.log("switchTurn called.");
             selectedAttackingDie = null;
             selectedTargetDie = null;
+            currentFormulaParts = []; // Clear formula on turn switch
+            usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on turn switch
+            renderMindAttackFormulaDisplay(); // Ensure formula display is cleared
             activePlayerIndex = activePlayerIndex === 0 ? 1 : 0;
             turnCounter++;
             messageEl.textContent = `${players[activePlayerIndex].name}'s turn (Round ${roundCounter}). Select an opponent's die to target.`;
@@ -1877,6 +1896,14 @@
                 console.warn("Clicked die in modal not found:", clickedDieId);
                 return;
             }
+
+            // NEW: Check if die is already used
+            if (usedDiceInCurrentFormula.has(clickedDie.id)) {
+                messageEl.textContent = `Die ${clickedDie.label} is already used in the formula.`;
+                console.warn(`Attempted to use die ${clickedDie.label} multiple times.`);
+                return;
+            }
+
             console.log("Modal die clicked:", clickedDie.label, clickedDie.value);
 
             playSound('click');
@@ -1891,8 +1918,10 @@
                     return;
                 }
                 currentFormulaParts.push(clickedDie.label);
+                usedDiceInCurrentFormula.set(clickedDie.id, clickedDie.label); // NEW: Add to used dice map
                 renderMindAttackFormulaDisplay();
                 messageEl.textContent = "Die added to formula.";
+                renderMindAttackModalContent(); // Re-render to update selectable dice disabled state
             }
         });
 
@@ -1915,6 +1944,7 @@
                     break;
                 case 'mindAttackInput': // From building formula, go back to choosing attack type
                     currentFormulaParts = [];
+                    usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on back
                     renderMindAttackFormulaDisplay(); // Clear formula display
                     hideMindAttackModal(); // Hide the modal
                     // Keep selectedTargetDie, but clear selectedAttackingDie as player is choosing attack type again
@@ -2094,21 +2124,6 @@
 
         async function executeMindAttack() { // Made async to await promises
             console.log("executeMindAttack called.");
-            const formula = currentFormulaParts.map(part => {
-                if (ALPHA.includes(part)) {
-                    const die = players[activePlayerIndex].dice.find(d => d.label === part);
-                    return die ? die.value : ''; // Replace label with value for evaluation
-                }
-                return part;
-            }).join('');
-            console.log("Mind attack formula string for evaluation:", formula);
-
-            if (!formula) {
-                messageEl.textContent = "Please build a formula first.";
-                console.warn("Mind attack failed: empty formula.");
-                return; // Do not switch turn
-            }
-
             const attacker = players[activePlayerIndex];
             const defenderIndex = selectedTargetDie.playerIndex;
             const defender = players[defenderIndex];
@@ -2119,41 +2134,61 @@
                 addGameLogMessage("Error: Target die for mind attack not found. Turn reset.", "error");
                 selectedAttackingDie = null;
                 selectedTargetDie = null;
+                currentFormulaParts = [];
+                usedDiceInCurrentFormula.clear();
                 gamePhase = 'selectTarget'; // Go back to start of turn
                 updateUI();
                 console.error("Mind attack failed: target die not found.");
                 return;
             }
 
+            // Construct the formula string for evaluation, replacing labels with values
+            const formula = currentFormulaParts.map(part => {
+                if (ALPHA.includes(part)) {
+                    const die = attacker.dice.find(d => d.label === part);
+                    return die ? die.value : ''; // Replace label with value for evaluation
+                }
+                return part;
+            }).join('');
+            console.log("Mind attack formula string for evaluation:", formula);
+
+            if (!formula) {
+                messageEl.textContent = "Please build a formula first.";
+                console.warn("Mind attack failed: empty formula.");
+                return; // Do not proceed
+            }
+
             const scope = {};
+            // Populate scope with all attacker's dice values, keyed by their label
             attacker.dice.forEach(die => {
-                scope[die.label] = die.value; // Populate scope with original values for formula eval
+                scope[die.label] = die.value; 
             });
-            console.log("Math.js scope:", scope);
+            console.log("Math.js scope (all attacker dice):", scope);
 
             let result;
-            let diceUsedInFormula = [];
+            let diceUsedInFormulaForReroll = []; // This will contain the actual die objects to be rerolled
             try {
+                // Parse the formula to identify all unique dice (symbols) used
                 const node = math.parse(formula);
-                result = node.evaluate(scope);
+                result = node.evaluate(scope); // Evaluate using the scope
                 console.log("Formula evaluation result:", result);
 
-                node.filter(function (node) {
-                    return node.type === 'SymbolNode' && ALPHA.includes(node.name);
-                }).forEach(function (node) {
-                    const dieLabel = node.name;
-                    const correspondingDie = attacker.dice.find(d => d.label === dieLabel);
-                    if (correspondingDie) {
-                        if (!diceUsedInFormula.includes(correspondingDie)) {
-                            diceUsedInFormula.push(correspondingDie);
+                // Identify which dice (by their object reference) were actually used in the formula
+                // based on the ALPHA characters in currentFormulaParts.
+                currentFormulaParts.forEach(part => {
+                    if (ALPHA.includes(part)) {
+                        const die = attacker.dice.find(d => d.label === part);
+                        if (die && !diceUsedInFormulaForReroll.some(d => d.id === die.id)) {
+                             diceUsedInFormulaForReroll.push(die);
                         }
                     }
                 });
-                console.log("Dice used in formula:", diceUsedInFormula);
+                console.log("Dice identified for re-roll (based on formula parts):", diceUsedInFormulaForReroll);
 
-                if (diceUsedInFormula.length === 0 && currentFormulaParts.some(p => ALPHA.includes(p))) {
+
+                if (diceUsedInFormulaForReroll.length === 0 && currentFormulaParts.some(p => ALPHA.includes(p))) {
                     messageEl.textContent = "Your formula must use at least one of your dice.";
-                    console.warn("Mind attack failed: formula did not use any dice.");
+                    console.warn("Mind attack failed: formula did not use any dice (logic detection).");
                     return;
                 }
 
@@ -2161,12 +2196,12 @@
                 messageEl.textContent = `Invalid formula: ${e.message}. Please check your expression.`;
                 addGameLogMessage(`${attacker.name} submitted an invalid formula "${formula}": ${e.message}.`, 'error');
                 console.error("Math.js evaluation error:", e);
-                return; // Do not switch turn
+                return; // Do not proceed
             }
 
             // Re-roll dice used in formula for attacking player (regardless of success for Mind Attack)
             const animationPromises = [];
-            diceUsedInFormula.forEach(die => {
+            diceUsedInFormulaForReroll.forEach(die => {
                 const dieEl = (activePlayerIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${die.id}"]`);
                 if (dieEl) {
                     dieEl.classList.add('die-attacking-animation');
@@ -2179,7 +2214,7 @@
                 }
             });
             playSound('reroll');
-            reRollSpecificDice(activePlayerIndex, diceUsedInFormula); // Re-roll immediately
+            reRollSpecificDice(activePlayerIndex, diceUsedInFormulaForReroll); // Re-roll immediately
 
             // Wait for reroll animations to finish before continuing
             await Promise.all(animationPromises);
@@ -2191,8 +2226,8 @@
                 
                 // Force re-attempt: clear formula, keep selection, stay in mindAttackInput phase
                 currentFormulaParts = [];
+                usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on retry
                 renderMindAttackFormulaDisplay();
-                // Dice were already rerolled above
                 updateUI(); 
                 console.log("Mind attack failed: result mismatch. Player can retry.");
                 return; // DO NOT SWITCH TURN OR PROCEED WITH CAPTURE
@@ -2209,7 +2244,7 @@
             
             const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
             let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) with the EQUATION ${formattedFormulaHtml}. Captures ${defender.name}'s ${targetDie.type} dice.`;
-            const rerolledDiceInfo = diceUsedInFormula.map(d => `${d.type} dice rerolled to value ${d.value}`).join(', ');
+            const rerolledDiceInfo = diceUsedInFormulaForReroll.map(d => `${d.type} dice rerolled to value ${d.value}`).join(', ');
             if (rerolledDiceInfo) {
                 attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
             }
@@ -2218,6 +2253,7 @@
             messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula evaluated to ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
 
             currentFormulaParts = [];
+            usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on success
             renderMindAttackFormulaDisplay();
             
             checkWinCondition(); // Check if round ends
@@ -2232,6 +2268,7 @@
             messageEl.textContent = `${players[activePlayerIndex].name} chose to pass.`;
             addGameLogMessage(`${players[activePlayerIndex].name} passes their turn.`, 'info');
             currentFormulaParts = []; // Clear formula if passing from mind attack input
+            usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on pass
             renderMindAttackFormulaDisplay();
             switchTurn();
             console.log("handlePass finished.");
@@ -2266,6 +2303,7 @@
                 selectedAttackingDie = null;
                 selectedTargetDie = null;
                 currentFormulaParts = [];
+                usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on round win
                 renderMindAttackFormulaDisplay();
                 updateUI(); // Render empty pools and cleared state
 
@@ -2377,6 +2415,12 @@
                     selectableDieEl.classList.add('modal-formula-die-item', 'die-item', 'mind-attack-selectable', `d${die.type.substring(1)}`);
                     selectableDieEl.dataset.playerIndex = activePlayerIndex; // Important for event listener
                     selectableDieEl.dataset.dieId = die.id;
+
+                    // NEW: Disable die if already used in the formula
+                    if (usedDiceInCurrentFormula.has(die.id)) {
+                        selectableDieEl.classList.add('disabled');
+                    }
+
                     selectableDieEl.innerHTML = `
                         <div class="die-top-label"><span class="die-type-text">${die.type.toUpperCase()}</span></div>
                         <span class="die-value">${die.value}</span>
@@ -2407,6 +2451,13 @@
             if (key.match(/^[A-Z]$/)) {
                 const die = players[activePlayerIndex].dice.find(d => d.label === key);
                 if (die) {
+                    // NEW: Check if die is already used
+                    if (usedDiceInCurrentFormula.has(die.id)) {
+                        messageEl.textContent = `Die ${die.label} is already used in the formula.`;
+                        console.warn(`Keyboard input: Attempted to use die ${die.label} multiple times.`);
+                        return;
+                    }
+
                     // Validation similar to click
                     if (ALPHA.includes(lastPart) || lastPart === ')') {
                         messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
@@ -2414,7 +2465,9 @@
                         return;
                     }
                     currentFormulaParts.push(key);
+                    usedDiceInCurrentFormula.set(die.id, die.label); // NEW: Add to used dice map
                     playSound('click');
+                    messageEl.textContent = `Die ${key} added to formula.`;
                 } else {
                     messageEl.textContent = `Die with label '${key}' not found in your pool.`;
                     console.warn("Keyboard input: Die not found for label:", key);
@@ -2442,7 +2495,6 @@
                     }
                     if (key === ')' && (lastPart === '(' || OPERATORS.includes(lastPart))) {
                         messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
-                        console.warn("Keyboard input: Closing parenthesis invalid placement.");
                         return;
                     }
                 }
@@ -2452,7 +2504,20 @@
             // Handle Backspace
             else if (event.key === 'Backspace') {
                 if (currentFormulaParts.length > 0) {
-                    currentFormulaParts.pop();
+                    const removedPart = currentFormulaParts.pop();
+                    if (ALPHA.includes(removedPart)) { // If it was a die label, remove from used map
+                        // Find the die ID associated with the label
+                        let removedDieId = null;
+                        for (let [dieId, dieLabel] of usedDiceInCurrentFormula.entries()) {
+                            if (dieLabel === removedPart) {
+                                removedDieId = dieId;
+                                break;
+                            }
+                        }
+                        if (removedDieId) {
+                            usedDiceInCurrentFormula.delete(removedDieId); // NEW: Remove from used dice map
+                        }
+                    }
                     playSound('click');
                     messageEl.textContent = "Last part removed from formula.";
                 } else {
@@ -2476,6 +2541,7 @@
             }
             
             renderMindAttackFormulaDisplay();
+            renderMindAttackModalContent(); // Re-render to update selectable dice disabled state
             updateUI(); // To update button states, message, etc.
         }
 
@@ -2513,6 +2579,7 @@
                 playSound('click');
                 selectedAttackingDie = null; // Clear any previous attacking die selection
                 currentFormulaParts = []; // Clear formula for new mind attack
+                usedDiceInCurrentFormula.clear(); // NEW: Clear used dice for new mind attack
                 renderMindAttackFormulaDisplay();
                 gamePhase = 'mindAttackInput'; // Transition directly to formula input
                 updateUI(); // Update UI to show formula input container
@@ -2567,7 +2634,6 @@
                     }
                     if (value === ')' && (lastPart === '(' || OPERATORS.includes(lastPart))) {
                         messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
-                        console.warn("Formula button: Closing parenthesis invalid placement.");
                         return;
                     }
                 }
@@ -2585,10 +2651,12 @@
             console.log("Clear formula button clicked.");
             playSound('click');
             currentFormulaParts = [];
+            usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on clear
             renderMindAttackFormulaDisplay();
             const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
             messageEl.textContent = `Formula cleared. Build formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
             updateUI();
+            renderMindAttackModalContent(); // Re-render to update selectable dice disabled state
         });
 
         btnFormulaBackspaceModal.addEventListener('click', () => {
@@ -2596,7 +2664,20 @@
             console.log("Backspace formula button clicked.");
             playSound('click');
             if (currentFormulaParts.length > 0) {
-                currentFormulaParts.pop();
+                const removedPart = currentFormulaParts.pop();
+                if (ALPHA.includes(removedPart)) { // If it was a die label, remove from used map
+                    // Find the die ID associated with the label
+                    let removedDieId = null;
+                    for (let [dieId, dieLabel] of usedDiceInCurrentFormula.entries()) {
+                        if (dieLabel === removedPart) {
+                            removedDieId = dieId;
+                            break;
+                        }
+                    }
+                    if (removedDieId) {
+                        usedDiceInCurrentFormula.delete(removedDieId); // NEW: Remove from used dice map
+                    }
+                }
                 renderMindAttackFormulaDisplay();
                 const targetDie = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
                 messageEl.textContent = `Last part removed. Continue building formula to match ${targetDie.type.toUpperCase()} (${targetDie.value}).`;
@@ -2604,6 +2685,7 @@
                 messageEl.textContent = "Formula is already empty.";
             }
             updateUI();
+            renderMindAttackModalContent(); // Re-render to update selectable dice disabled state
         });
 
         // Initial game setup
