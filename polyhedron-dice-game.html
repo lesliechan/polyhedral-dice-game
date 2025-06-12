@@ -685,7 +685,7 @@
             font-weight: bold;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
             cursor: pointer;
-            transition: transform 0.1s ease-in-out, border 0.1s ease-in-out;
+            transition: transform 0.1s ease-in-out, border 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
             border: 2px solid transparent;
             z-index: 1;
             box-sizing: border-box;
@@ -2227,7 +2227,7 @@
             const defender = players[defenderIndex];
             const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId); 
 
-            // NEW: Close modal before execution so animations are visible
+            // NEW: Close modal immediately so animations are visible
             hideMindAttackModal();
 
             if (!targetDie) {
@@ -2422,7 +2422,7 @@
                 currentFormulaParts = [];
                 usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on round win
                 renderMindAttackFormulaDisplay();
-                updateUI(); // Render empty pools and cleared state
+                updateUI(); // Immediately render empty pools and cleared state
 
                 setTimeout(() => { // Small delay before starting next round
                     determineFirstPlayer(); // Start a new round with fresh dice pools
