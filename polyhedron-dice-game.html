@@ -1433,13 +1433,13 @@
         // policies might prevent sounds from loading or playing (e.g., "NotAllowedError" or "NotSupportedError").
         // The paths below are relative to your game's root directory if you host your sounds there.
         const sounds = {
-            roll: new Audio('/polyhedron-dice-game/sounds/roll.mp3'),
-            click: new Audio('/polyhedron-dice-game/sounds/click.mp3'),
-            hit: new Audio('/polyhedron-dice-game/sounds/hit.mp3'),
-            zap: new Audio('/polyhedron-dice-game/sounds/zap.mp3'),
-            ding: new Audio('/polyhedron-dice-game/sounds/ding.mp3'),
-            reroll: new Audio('/polyhedron-dice-game/sounds/reroll.mp3'),
-            win: new Audio('/polyhedron-dice-game/sounds/win.mp3')
+            roll: new Audio('sounds/roll.mp3'),
+            click: new Audio('sounds/click.mp3'),
+            hit: new Audio('sounds/hit.mp3'),
+            zap: new Audio('sounds/zap.mp3'),
+            ding: new Audio('sounds/ding.mp3'),
+            reroll: new Audio('sounds/reroll.mp3'),
+            win: new Audio('sounds/win.mp3')
         };
 
 
@@ -1805,9 +1805,12 @@
                     opponentDicePool.classList.add('focus-frame');
                     break;
                 case 'chooseAttackType': // NEW PHASE: choose Strength or Mind after target selected
-                    const targetDieObj = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
-                    if (currentAttacker && opponentPlayer && targetDieObj) {
-                        messageEl.textContent = `${currentAttacker.name}, you have targeted ${opponentPlayer.name}'s ${targetDieObj.type.toUpperCase()} (${targetDieObj.value}). Now choose your attack type: Strength or Mind.`;
+                    // Check if selectedTargetDie exists before accessing its properties
+                    if (selectedTargetDie) { // FIX: Added check for selectedTargetDie
+                        const targetDieObj = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                        if (currentAttacker && opponentPlayer && targetDieObj) {
+                            messageEl.textContent = `${currentAttacker.name}, you have targeted ${opponentPlayer.name}'s ${targetDieObj.type.toUpperCase()} (${targetDieObj.value}). Now choose your attack type: Strength or Mind.`;
+                        }
                     }
                     btnStrengthAttack.disabled = false;
                     btnMindAttack.disabled = false;
@@ -2422,7 +2425,8 @@
                 currentFormulaParts = [];
                 usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on round win
                 renderMindAttackFormulaDisplay();
-                updateUI(); // Immediately render empty pools and cleared state
+                // FIX: Removed updateUI() here, it will be called by determineFirstPlayer after delay
+                // updateUI(); 
 
                 setTimeout(() => { // Small delay before starting next round
                     determineFirstPlayer(); // Start a new round with fresh dice pools
