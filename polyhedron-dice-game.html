@@ -617,7 +617,7 @@
         /* Modal Header (Target Die Display) */
         .modal-header-target {
             background-color: #2c3e50;
-            padding: 10px;
+            padding: 5px; /* Reduced padding */
             border-radius: 8px;
             text-align: center;
             color: #ecf0f1;
@@ -626,20 +626,20 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
+            gap: 2px; /* Reduced gap */
         }
         .modal-header-target .target-die-display .die-item {
-            width: 70px; /* Slightly larger for target */
-            height: 70px;
-            font-size: 1.8em;
+            width: 60px; /* Reduced size */
+            height: 60px; /* Reduced size */
+            font-size: 1.5em; /* Adjusted font size for smaller die */
             cursor: default;
-            margin: 10px auto 0; /* Center it */
+            margin: 5px auto 0; /* Center it, reduced margin */
             border: 2px solid #e74c3c; /* Target color border */
             box-shadow: 0 0 10px rgba(231, 76, 60, 0.7);
         }
         .modal-header-target .target-die-display .die-top-label .die-type-text,
         .modal-header-target .target-die-display .die-bottom-label .die-label-text {
-            font-size: 0.7em;
+            font-size: 0.6em; /* Adjusted font size for smaller labels */
         }
 
         /* Modal Body (Selectable Dice & Operators) */
@@ -647,11 +647,11 @@
             flex-grow: 1; /* Allow this section to grow */
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px; /* Reduced gap */
             background-color: #2c3e50;
-            padding: 15px;
+            padding: 10px; /* Reduced padding */
             border-radius: 8px;
-            overflow-y: auto; /* Enable scrolling for operator section if too many */
+            overflow-y: hidden; /* Prevent scrolling */
             box-sizing: border-box;
         }
 
@@ -659,15 +659,15 @@
             display: flex;
             flex-wrap: wrap; /* Allow wrapping of dice */
             justify-content: center;
-            gap: 10px;
-            padding-bottom: 10px; /* Space below dice before operators */
+            gap: 8px; /* Reduced gap */
+            padding-bottom: 8px; /* Reduced space below dice before operators */
             border-bottom: 1px solid #4a627a; /* Separator */
         }
         /* Smaller dice for formula selection */
         .modal-formula-die-item {
             position: relative;
-            width: 45px; /* Smaller size */
-            height: 45px;
+            width: 40px; /* Smaller size */
+            height: 40px; /* Smaller size */
             border-radius: 6px;
             display: flex;
             flex-direction: column;
@@ -682,12 +682,12 @@
             box-sizing: border-box;
         }
         .modal-formula-die-item .die-value {
-            font-size: 1.2em; /* Adjusted font size for smaller dice */
+            font-size: 1.1em; /* Adjusted font size for smaller dice */
         }
         .modal-formula-die-item .die-top-label .die-type-text,
         .modal-formula-die-item .die-bottom-label .die-label-text {
-            font-size: 0.55em; /* Adjusted font size for smaller labels */
-            padding: 1px 4px;
+            font-size: 0.5em; /* Adjusted font size for smaller labels */
+            padding: 1px 3px; /* Adjusted padding */
         }
         .modal-formula-die-item.mind-attack-selectable {
             border: 2px solid #9b59b6;
@@ -698,8 +698,8 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
-            padding-top: 10px;
+            gap: 6px; /* Reduced gap */
+            padding-top: 8px; /* Reduced padding */
         }
         .operator-buttons-area .formula-btn {
             background-color: #3498db;
@@ -789,7 +789,7 @@
         }
 
 
-        #btnSubmitMindAttack {
+        #btnSubmitMindAttackModal { /* Changed from #btnSubmitMindAttack to match HTML ID */
             background-color: #27ae60;
             color: white;
             border: none;
@@ -802,7 +802,7 @@
             box-sizing: border-box;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
-        #btnSubmitMindAttack:hover:not(:disabled) {
+        #btnSubmitMindAttackModal:hover:not(:disabled) { /* Changed from #btnSubmitMindAttack to match HTML ID */
             background-color: #2ecc71;
             transform: translateY(-2px);
         }
@@ -973,34 +973,20 @@
                 max-height: 90vh;
             }
             .modal-header-target .target-die-display .die-item {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5em;
+                width: 50px; /* Further reduced */
+                height: 50px; /* Further reduced */
+                font-size: 1.3em;
             }
             .modal-header-target .target-die-display .die-top-label .die-type-text,
             .modal-header-target .target-die-display .die-bottom-label .die-label-text {
-                font-size: 0.65em;
+                font-size: 0.55em; /* Further reduced */
             }
             .modal-formula-die-item {
-                width: 40px;
-                height: 40px;
+                width: 35px; /* Further reduced */
+                height: 35px; /* Further reduced */
             }
             .modal-formula-die-item .die-value {
-                font-size: 1.1em;
-            }
-            .modal-formula-die-item .die-top-label .die-type-text,
-            .modal-formula-die-item .die-bottom-label .die-label-text {
-                font-size: 0.5em;
-            }
-
-
-            .dice-legend {
-                font-size: 0.75em; /* Smaller legend on smaller screens */
-                gap: 5px 10px;
-            }
-            .legend-color-box {
-                width: 12px;
-                height: 12px;
+                font-size: 1em;
             }
         }
 
@@ -1065,7 +1051,7 @@
 
             .controls button,
             .mind-attack-buttons .formula-btn,
-            #btnSubmitMindAttack {
+            #btnSubmitMindAttackModal { /* Changed from #btnSubmitMindAttack to match HTML ID */
                 padding: 7px 12px;
                 font-size: 0.85em;
             }
@@ -1095,16 +1081,16 @@
             }
             /* Mind Attack Modal Responsive adjustments for very small screens */
             .modal-header-target .target-die-display .die-item {
-                width: 50px;
-                height: 50px;
-                font-size: 1.3em;
+                width: 45px; /* Further reduced */
+                height: 45px; /* Further reduced */
+                font-size: 1.2em;
             }
             .modal-formula-die-item {
-                width: 35px;
-                height: 35px;
+                width: 30px; /* Further reduced */
+                height: 30px; /* Further reduced */
             }
             .modal-formula-die-item .die-value {
-                font-size: 1em;
+                font-size: 0.9em;
             }
         }
 
@@ -1395,7 +1381,6 @@
             gameOverOverlay.style.display = 'none'; // Keep hidden, it's for series end
 
             currentFormulaParts = [];
-            // Removed: renderMindAttackFormulaDisplay(); // This was causing the error as activePlayerIndex was not set yet
             gameLogEl.innerHTML = ''; // Clear log on full new game
             turnCounter = 0;
             roundCounter = 0; // Reset round counter on full new game
@@ -2107,7 +2092,7 @@
             console.log("executeStrengthAttack finished.");
         }
 
-        function executeMindAttack() {
+        async function executeMindAttack() { // Made async to await promises
             console.log("executeMindAttack called.");
             const formula = currentFormulaParts.map(part => {
                 if (ALPHA.includes(part)) {
@@ -2149,12 +2134,10 @@
             let result;
             let diceUsedInFormula = [];
             try {
-                // Ensure formula is valid before evaluating
                 const node = math.parse(formula);
                 result = node.evaluate(scope);
                 console.log("Formula evaluation result:", result);
 
-                // Identify which dice were actually used in the evaluated formula based on SymbolNodes
                 node.filter(function (node) {
                     return node.type === 'SymbolNode' && ALPHA.includes(node.name);
                 }).forEach(function (node) {
@@ -2169,13 +2152,6 @@
                 console.log("Dice used in formula:", diceUsedInFormula);
 
                 if (diceUsedInFormula.length === 0 && currentFormulaParts.some(p => ALPHA.includes(p))) {
-                     // This condition handles cases where formula might contain letters but they aren't parsed
-                     // as actual symbols in a way math.js identifies them, or if the formula is just operators.
-                     // The logic above should prevent formulas with no dice, but this is a fallback.
-                     // A formula like "A" would be a SymbolNode and get caught by the filter.
-                     // A formula like "(+)" would have no SymbolNodes.
-                     // If the formula *contains* a letter, it should be marked as used.
-                     // This could be simplified to: if no dice are used, and formula isn't just a number, it's an error.
                     messageEl.textContent = "Your formula must use at least one of your dice.";
                     console.warn("Mind attack failed: formula did not use any dice.");
                     return;
@@ -2191,7 +2167,6 @@
             // Re-roll dice used in formula for attacking player (regardless of success for Mind Attack)
             const animationPromises = [];
             diceUsedInFormula.forEach(die => {
-                // Ensure we get the DOM element from the correct player's pool
                 const dieEl = (activePlayerIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${die.id}"]`);
                 if (dieEl) {
                     dieEl.classList.add('die-attacking-animation');
@@ -2205,6 +2180,9 @@
             });
             playSound('reroll');
             reRollSpecificDice(activePlayerIndex, diceUsedInFormula); // Re-roll immediately
+
+            // Wait for reroll animations to finish before continuing
+            await Promise.all(animationPromises);
 
             // --- NEW GAMEPLAY RULE FOR MIND ATTACK (Retry Formula) ---
             if (result !== targetDie.value) {
@@ -2224,32 +2202,28 @@
             // If formula matches, proceed with capture animation and game state update
             const targetDieEl = (defenderIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${targetDie.id}"]`);
             
-            Promise.all(animationPromises).then(() => { // Ensure reroll animations finish before capture
-                return performCaptureAnimation(targetDieEl, targetDie, defenderIndex);
-            }).then(() => {
-                // This block executes AFTER the capture animation completes
-                defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
-                attacker.captured.push(targetDie);
-                // attacker.score++; // REMOVED: Score only on round win
+            await performCaptureAnimation(targetDieEl, targetDie, defenderIndex); // Await capture animation
+            
+            defender.dice = defender.dice.filter(d => d.id !== targetDie.id);
+            attacker.captured.push(targetDie);
+            
+            const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
+            let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) with the EQUATION ${formattedFormulaHtml}. Captures ${defender.name}'s ${targetDie.type} dice.`;
+            const rerolledDiceInfo = diceUsedInFormula.map(d => `${d.type} dice rerolled to value ${d.value}`).join(', ');
+            if (rerolledDiceInfo) {
+                attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
+            }
+            addGameLogMessage(attackMessage, 'info', true);
 
-                const formattedFormulaHtml = formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice);
-                let attackMessage = `${attacker.name} performs Mind Attack AGAINST ${defender.name}'s ${targetDie.type} dice (value ${targetDie.value}) with the EQUATION ${formattedFormulaHtml}. Captures ${defender.name}'s ${targetDie.type} dice.`;
-                const rerolledDiceInfo = diceUsedInFormula.map(d => `${d.type} dice rerolled to value ${d.value}`).join(', ');
-                if (rerolledDiceInfo) {
-                    attackMessage += ` ${attacker.name}'s ${rerolledDiceInfo}.`;
-                }
-                addGameLogMessage(attackMessage, 'info', true);
+            messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula evaluated to ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
 
-                messageEl.textContent = `${attacker.name}'s Mind Attack succeeded! Formula evaluated to ${result}. Captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value})!`;
-
-                currentFormulaParts = [];
-                renderMindAttackFormulaDisplay();
-                
-                checkWinCondition(); // Check if round ends
-                if (playing) { // 'playing' would be false only if a series winner was decided
-                    switchTurn(); // Switches to selectTarget
-                }
-            });
+            currentFormulaParts = [];
+            renderMindAttackFormulaDisplay();
+            
+            checkWinCondition(); // Check if round ends
+            if (playing) { // 'playing' would be false only if a series winner was decided
+                switchTurn(); // Switches to selectTarget
+            }
             console.log("executeMindAttack finished.");
         }
 
