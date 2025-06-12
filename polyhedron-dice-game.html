@@ -1395,7 +1395,7 @@
             gameOverOverlay.style.display = 'none'; // Keep hidden, it's for series end
 
             currentFormulaParts = [];
-            renderMindAttackFormulaDisplay(); // Clear formula display inside modal
+            // Removed: renderMindAttackFormulaDisplay(); // This was causing the error as activePlayerIndex was not set yet
             gameLogEl.innerHTML = ''; // Clear log on full new game
             turnCounter = 0;
             roundCounter = 0; // Reset round counter on full new game
@@ -1600,6 +1600,11 @@
         function renderMindAttackFormulaDisplay() {
             // console.log("renderMindAttackFormulaDisplay called. Current formula parts:", currentFormulaParts); // Too verbose, disable
             mindAttackDisplayEl.innerHTML = '';
+            // Ensure activePlayerIndex is valid before trying to access players[activePlayerIndex].dice
+            if (activePlayerIndex === undefined || players[activePlayerIndex] === undefined) {
+                console.warn("renderMindAttackFormulaDisplay called before activePlayerIndex or players[activePlayerIndex] is defined.");
+                return; // Exit if state is not ready
+            }
             const activePlayerDice = players[activePlayerIndex].dice;
 
             currentFormulaParts.forEach(part => {
@@ -1670,8 +1675,14 @@
             // Clear previous message
             messageEl.textContent = ""; 
 
-            const currentAttacker = players[activePlayerIndex];
-            const opponentPlayer = players[activePlayerIndex === 0 ? 1 : 0];
+            // Only attempt to get currentAttacker and opponentPlayer if activePlayerIndex is defined
+            let currentAttacker = null;
+            let opponentPlayer = null;
+            if (activePlayerIndex !== undefined) {
+                currentAttacker = players[activePlayerIndex];
+                opponentPlayer = players[activePlayerIndex === 0 ? 1 : 0];
+            }
+
 
             // --- Focus Frame Logic ---
             // Remove focus frame from all elements first
@@ -1682,7 +1693,9 @@
                     messageEl.textContent = "Rolling dice to determine first player...";
                     break;
                 case 'selectTarget': // Initial phase for player turn
-                    messageEl.textContent = `${currentAttacker.name}, select an opponent's die to target.`;
+                    if (currentAttacker) {
+                        messageEl.textContent = `${currentAttacker.name}, select an opponent's die to target.`;
+                    }
                     btnPass.disabled = false;
                     btnBack.disabled = true; // No prior state to go back to this turn
                     // Frame opponent's dice pool
@@ -1691,7 +1704,9 @@
                     break;
                 case 'chooseAttackType': // NEW PHASE: choose Strength or Mind after target selected
                     const targetDieObj = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
-                    messageEl.textContent = `${currentAttacker.name}, you have targeted ${opponentPlayer.name}'s ${targetDieObj.type.toUpperCase()} (${targetDieObj.value}). Now choose your attack type: Strength or Mind.`;
+                    if (currentAttacker && opponentPlayer && targetDieObj) {
+                        messageEl.textContent = `${currentAttacker.name}, you have targeted ${opponentPlayer.name}'s ${targetDieObj.type.toUpperCase()} (${targetDieObj.value}). Now choose your attack type: Strength or Mind.`;
+                    }
                     btnStrengthAttack.disabled = false;
                     btnMindAttack.disabled = false;
                     btnPass.disabled = false;
@@ -1701,7 +1716,9 @@
                     break;
                 case 'selectAttackerForStrength': // NEW PHASE: only for Strength Attack, player picks own die
                     const targetDieObjForStrength = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
-                    messageEl.textContent = `${currentAttacker.name}, choose one of your dice to attack ${opponentPlayer.name}'s ${targetDieObjForStrength.type.toUpperCase()} (${targetDieObjForStrength.value}).`;
+                    if (currentAttacker && opponentPlayer && targetDieObjForStrength) {
+                        messageEl.textContent = `${currentAttacker.name}, choose one of your dice to attack ${opponentPlayer.name}'s ${targetDieObjForStrength.type.toUpperCase()} (${targetDieObjForStrength.value}).`;
+                    }
                     btnPass.disabled = false;
                     btnBack.disabled = false; // Can go back to chooseAttackType
                     // Frame active player's dice pool
@@ -1711,7 +1728,9 @@
                     break;
                 case 'mindAttackInput': // Shared by both strength & mind attack execution
                     const targetDieForFormula = opponentPlayer.dice.find(d => d.id === selectedTargetDie.dieId);
-                    messageEl.textContent = `${currentAttacker.name}, build a formula to match ${opponentPlayer.name}'s ${targetDieForFormula.type.toUpperCase()} (${targetDieForFormula.value}).`;
+                    if (currentAttacker && opponentPlayer && targetDieForFormula) {
+                         messageEl.textContent = `${currentAttacker.name}, build a formula to match ${opponentPlayer.name}'s ${targetDieForFormula.type.toUpperCase()} (${targetDieForFormula.value}).`;
+                    }
                     btnBack.disabled = false; // Allow back from formula input
                     // Frame the mind attack modal
                     mindAttackModalContent.classList.add('focus-frame');
@@ -2377,20 +2396,26 @@
 
             // Render Selectable Dice for active player
             selectableDiceArea.innerHTML = '';
-            players[activePlayerIndex].dice.forEach((die, index) => {
-                const selectableDieEl = document.createElement('div');
-                selectableDieEl.classList.add('modal-formula-die-item', 'die-item', 'mind-attack-selectable', `d${die.type.substring(1)}`);
-                selectableDieEl.dataset.playerIndex = activePlayerIndex; // Important for event listener
-                selectableDieEl.dataset.dieId = die.id;
-                selectableDieEl.innerHTML = `
-                    <div class="die-top-label"><span class="die-type-text">${die.type.toUpperCase()}</span></div>
-                    <span class="die-value">${die.value}</span>
-                    <div class="die-bottom-label"><span class="die-label-text">${die.label}</span></div>
-                `;
-                selectableDieEl.style.backgroundColor = DICE_COLORS_MAP[die.type];
-                selectableDieEl.querySelector('.die-value').style.color = getContrastColor(DICE_COLORS_MAP[die.type]);
-                selectableDiceArea.appendChild(selectableDieEl);
-            });
+            // Defensive check before iterating over activePlayer's dice
+            if (activePlayerIndex !== undefined && players[activePlayerIndex] && players[activePlayerIndex].dice) {
+                players[activePlayerIndex].dice.forEach((die, index) => {
+                    const selectableDieEl = document.createElement('div');
+                    selectableDieEl.classList.add('modal-formula-die-item', 'die-item', 'mind-attack-selectable', `d${die.type.substring(1)}`);
+                    selectableDieEl.dataset.playerIndex = activePlayerIndex; // Important for event listener
+                    selectableDieEl.dataset.dieId = die.id;
+                    selectableDieEl.innerHTML = `
+                        <div class="die-top-label"><span class="die-type-text">${die.type.toUpperCase()}</span></div>
+                        <span class="die-value">${die.value}</span>
+                        <div class="die-bottom-label"><span class="die-label-text">${die.label}</span></div>
+                    `;
+                    selectableDieEl.style.backgroundColor = DICE_COLORS_MAP[die.type];
+                    selectableDieEl.querySelector('.die-value').style.color = getContrastColor(DICE_COLORS_MAP[die.type]);
+                    selectableDiceArea.appendChild(selectableDieEl);
+                });
+            } else {
+                console.warn("Attempted to render selectable dice before activePlayer's dice were available.");
+            }
+
 
             renderMindAttackFormulaDisplay(); // Render the current formula
             console.log("renderMindAttackModalContent finished.");
