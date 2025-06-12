@@ -884,6 +884,71 @@
             animation: rotatePulse 0.6s ease-out forwards;
         }
 
+        /* --- NEW: Error Modal Styles --- */
+        .error-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Dark semi-transparent overlay */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000; /* Above all other modals */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .error-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .error-modal-content {
+            background-color: #c0392b; /* Red background for error */
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-sizing: border-box;
+        }
+
+        .error-modal-content h3 {
+            margin: 0;
+            font-size: 1.8em;
+            color: #ecf0f1;
+        }
+
+        .error-modal-content p {
+            margin: 0;
+            font-size: 1.1em;
+            line-height: 1.4;
+        }
+
+        .error-modal-content button {
+            background-color: #e74c3c; /* Slightly lighter red for button */
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .error-modal-content button:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+
         /* --- MEDIA QUERIES FOR RESPONSIVENESS --- */
 
         /* For screens smaller than 1200px (primary breakpoint for side-log layout) */
@@ -997,6 +1062,17 @@
             .modal-formula-die-item .die-value {
                 font-size: 1em;
             }
+            /* Error Modal Responsive adjustments */
+            .error-modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+            .error-modal-content h3 {
+                font-size: 1.6em;
+            }
+            .error-modal-content p {
+                font-size: 1em;
+            }
         }
 
         /* For screens smaller than 500px (e.g., most smartphones) */
@@ -1099,6 +1175,16 @@
                 height: 30px; /* Further reduced */
             }
             .modal-formula-die-item .die-value {
+                font-size: 0.9em;
+            }
+            /* Error Modal Responsive adjustments */
+            .error-modal-content {
+                padding: 15px;
+            }
+            .error-modal-content h3 {
+                font-size: 1.4em;
+            }
+            .error-modal-content p {
                 font-size: 0.9em;
             }
         }
@@ -1249,6 +1335,15 @@
         </div>
     </div>
 
+    <!-- NEW: Generic Error Modal -->
+    <div id="errorModalOverlay" class="error-modal-overlay">
+        <div id="errorModalContent" class="error-modal-content">
+            <h3>Error!</h3>
+            <p id="errorMessage"></p>
+            <button id="btnErrorModalOk">Try Again</button>
+        </div>
+    </div>
+
     <div id="gameOverOverlay" class="game-over-overlay" style="display: none;">
         <p id="gameOverMessage"></p>
         <button id="btnPlayAgain">Play Again</button>
@@ -1279,6 +1374,11 @@
         const btnFormulaClearModal = document.getElementById('btnFormulaClearModal');
         const btnFormulaBackspaceModal = document.getElementById('btnFormulaBackspaceModal');
         const btnSubmitMindAttackModal = document.getElementById('btnSubmitMindAttackModal');
+        // NEW: Error Modal elements
+        const errorModalOverlay = document.getElementById('errorModalOverlay');
+        const errorMessageEl = document.getElementById('errorMessage');
+        const btnErrorModalOk = document.getElementById('btnErrorModalOk');
+
 
         const messageEl = document.getElementById('message');
         const gameOverOverlay = document.getElementById('gameOverOverlay');
@@ -1391,7 +1491,8 @@
             player1CapturedDiceEl.innerHTML = '';
             
             messageEl.textContent = '';
-            hideMindAttackModal(); // Ensure modal is hidden
+            hideMindAttackModal(); // Ensure mind attack modal is hidden
+            hideErrorModal(); // NEW: Ensure error modal is hidden
             gameOverOverlay.style.display = 'none'; // Keep hidden, it's for series end
 
             currentFormulaParts = [];
@@ -1773,9 +1874,10 @@
 
             if (!firstPlayerDetermined) {
                 console.log("Tie, re-rolling.");
-                messageEl.textContent = "It's a tie on initial rolls! Re-rolling to determine first player.";
                 addGameLogMessage("Initial roll resulted in a tie. Re-rolling.", "info");
-                setTimeout(determineFirstPlayer, 1500);
+                showErrorModal("It's a tie on initial rolls! We need to re-roll to determine who goes first.", () => {
+                    determineFirstPlayer(); // Retry determining first player
+                });
                 return;
             }
             
@@ -1828,13 +1930,11 @@
             // Or if it's a mindAttackInput phase using own dice
             // Also, during 'chooseAttackType' phase, no dice clicks are allowed, only button clicks.
             if (gamePhase !== 'mindAttackInput' && clickedPlayerIndex !== activePlayerIndex && gamePhase !== 'selectTarget') {
-                messageEl.textContent = `It's not your turn, ${players[clickedPlayerIndex].name}.`;
-                updateUI();
+                showErrorModal(`It's not your turn, ${players[clickedPlayerIndex].name}. Please wait for your turn.`, updateUI);
                 return;
             }
             if (gamePhase === 'chooseAttackType') {
-                messageEl.textContent = "Please choose 'Strength Attack' or 'Mind Attack' from the buttons below.";
-                updateUI();
+                showErrorModal("Please choose 'Strength Attack' or 'Mind Attack' from the buttons below.", updateUI);
                 return;
             }
 
@@ -1849,7 +1949,7 @@
                         messageEl.textContent = `${players[activePlayerIndex].name}, you have targeted ${players[clickedPlayerIndex].name}'s ${clickedDie.type.toUpperCase()} (${clickedDie.value}). Now choose your attack type.`;
                         console.log("Target selected:", selectedTargetDie, "New game phase:", gamePhase);
                     } else {
-                        messageEl.textContent = `Please select an opponent's die as a target, ${players[activePlayerIndex].name}.`;
+                        showErrorModal(`You must select an opponent's die as a target, ${players[activePlayerIndex].name}.`, updateUI);
                         console.log("Invalid target selection: selected own die.");
                     }
                     break;
@@ -1869,16 +1969,16 @@
                             // Note: executeStrengthAttack will handle turn switch or re-prompt
                         }
                     } else {
-                        messageEl.textContent = `You must select one of your own dice to perform the Strength Attack.`;
+                        showErrorModal(`You must select one of your own dice to perform the Strength Attack.`, updateUI);
                         console.log("Invalid attacker selection: selected opponent's die.");
                     }
                     break;
                 case 'gameOver':
-                    messageEl.textContent = "Game is over. Start a new game!";
+                    showErrorModal("The game is already over. Please start a new game to play again!", () => {}); // No callback to restore game
                     console.log("Game over state, dice clicks ignored.");
                     break;
                 default:
-                    messageEl.textContent = "Invalid game state for dice selection.";
+                    showErrorModal("Invalid game state for this action.", updateUI);
                     console.warn("Unexpected game phase for handleDieClick:", gamePhase);
             }
             updateUI();
@@ -1899,7 +1999,7 @@
 
             // NEW: Check if die is already used
             if (usedDiceInCurrentFormula.has(clickedDie.id)) {
-                messageEl.textContent = `Die ${clickedDie.label} is already used in the formula.`;
+                showErrorModal(`Die ${clickedDie.label} is already used in the formula. Each die can only be used once.`, renderMindAttackModalContent);
                 console.warn(`Attempted to use die ${clickedDie.label} multiple times.`);
                 return;
             }
@@ -1913,7 +2013,7 @@
 
             if (isLetter) {
                 if (ALPHA.includes(lastPart) || lastPart === ')') {
-                    messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
+                    showErrorModal("Please add an operator (+-*/) before another die or closing parenthesis.", renderMindAttackModalContent);
                     console.warn("Mind attack formula invalid: die after die/parenthesis.");
                     return;
                 }
@@ -1953,10 +2053,11 @@
                     console.log("Back from mind attack input to chooseAttackType phase.");
                     break;
                 case 'selectTarget': // If at the very first step of turn, back does nothing (or implies new turn)
-                    messageEl.textContent = `You are at the start of your turn. You can Pass, or select a target.`;
+                    showErrorModal(`You are at the start of your turn. You can Pass, or select a target.`, updateUI);
                     console.log("Already at selectTarget, back button has no effect.");
                     return; // Don't update UI if no change in state
                 default:
+                    showErrorModal("Cannot go back from this state.", updateUI);
                     console.warn("Back button called in unexpected phase:", gamePhase);
                     return; // For initialRoll or gameOver, back does nothing
             }
@@ -2046,9 +2147,7 @@
             console.log("executeStrengthAttack called.");
             // These should already be set correctly by handleDieClick
             if (!selectedAttackingDie || !selectedTargetDie) {
-                messageEl.textContent = "Internal Error: Attack selection lost. Resetting turn.";
-                addGameLogMessage("Internal Error: Strength attack initiated without valid selections. Turn reset.", "error");
-                switchTurn(); // Force turn switch as state is corrupted
+                showErrorModal("Internal Error: Attack selection lost. Resetting turn.", switchTurn); // Force turn switch as state is corrupted
                 return;
             }
 
@@ -2060,25 +2159,24 @@
             const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId); 
 
             if (!attackingDie || !targetDie) {
-                messageEl.textContent = `Error: Selected dice not found. Please re-select your target.`;
+                showErrorModal(`Error: Selected dice not found. Please re-select your target.`, () => {
+                    selectedAttackingDie = null; 
+                    selectedTargetDie = null;
+                    gamePhase = 'selectTarget'; // Go back to start of turn
+                    updateUI();
+                });
                 addGameLogMessage(`Strength Attack aborted: One or both selected dice not found in pools. Attacker ID: ${selectedAttackingDie.dieId || 'N/A'}, Target ID: ${selectedTargetDie.dieId || 'N/A'}.`, 'error');
-                
-                selectedAttackingDie = null; 
-                selectedTargetDie = null;
-                gamePhase = 'selectTarget'; // Go back to start of turn
-                updateUI();
                 return;
             }
             
             // --- NEW GAMEPLAY RULE FOR STRENGTH ATTACK (Invalid Move) ---
             if (attackingDie.value < targetDie.value) {
-                messageEl.textContent = `Your ${attackingDie.type.toUpperCase()} (${attackingDie.value}) is too low for ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}). Please re-select your attacking die.`;
+                showErrorModal(`Your ${attackingDie.type.toUpperCase()} (${attackingDie.value}) is too low for ${defender.name}'s ${targetDie.type.toUpperCase()} (${targetDie.value}). Please re-select your attacking die.`, () => {
+                    selectedAttackingDie = null; // Reset to force re-selection of attacking die
+                    gamePhase = 'selectAttackerForStrength'; 
+                    updateUI();
+                });
                 addGameLogMessage(`${attacker.name}'s Strength Attack with ${attackingDie.type} (${attackingDie.value}) on ${defender.name}'s ${targetDie.type} (${targetDie.value}) is invalid (attacker < target). Player must re-select.`, 'error');
-                
-                selectedAttackingDie = null; // Reset to force re-selection of attacking die
-                // Keep selectedTargetDie, stay in selectAttackerForStrength phase
-                gamePhase = 'selectAttackerForStrength'; 
-                updateUI();
                 return; // DO NOT SWITCH TURN OR PROCEED WITH ATTACK
             }
             // --- END NEW RULE ---
@@ -2129,15 +2227,19 @@
             const defender = players[defenderIndex];
             const targetDie = defender.dice.find(d => d.id === selectedTargetDie.dieId); 
 
+            // NEW: Close modal before execution so animations are visible
+            hideMindAttackModal();
+
             if (!targetDie) {
-                messageEl.textContent = "Error: Target die not found. Please re-select your target.";
+                showErrorModal("Error: Target die not found. Please re-select your target.", () => {
+                    selectedAttackingDie = null;
+                    selectedTargetDie = null;
+                    currentFormulaParts = [];
+                    usedDiceInCurrentFormula.clear();
+                    gamePhase = 'selectTarget'; // Go back to start of turn
+                    updateUI();
+                });
                 addGameLogMessage("Error: Target die for mind attack not found. Turn reset.", "error");
-                selectedAttackingDie = null;
-                selectedTargetDie = null;
-                currentFormulaParts = [];
-                usedDiceInCurrentFormula.clear();
-                gamePhase = 'selectTarget'; // Go back to start of turn
-                updateUI();
                 console.error("Mind attack failed: target die not found.");
                 return;
             }
@@ -2153,7 +2255,13 @@
             console.log("Mind attack formula string for evaluation:", formula);
 
             if (!formula) {
-                messageEl.textContent = "Please build a formula first.";
+                showErrorModal("Please build a formula before submitting your Mind Attack.", () => {
+                    // Re-open mind attack modal to allow retry
+                    currentFormulaParts = [];
+                    usedDiceInCurrentFormula.clear();
+                    showMindAttackModal();
+                    updateUI();
+                });
                 console.warn("Mind attack failed: empty formula.");
                 return; // Do not proceed
             }
@@ -2187,13 +2295,23 @@
 
 
                 if (diceUsedInFormulaForReroll.length === 0 && currentFormulaParts.some(p => ALPHA.includes(p))) {
-                    messageEl.textContent = "Your formula must use at least one of your dice.";
+                    showErrorModal("Your formula must use at least one of your dice (e.g., 'A + 5').", () => {
+                        currentFormulaParts = [];
+                        usedDiceInCurrentFormula.clear();
+                        showMindAttackModal();
+                        updateUI();
+                    });
                     console.warn("Mind attack failed: formula did not use any dice (logic detection).");
                     return;
                 }
 
             } catch (e) {
-                messageEl.textContent = `Invalid formula: ${e.message}. Please check your expression.`;
+                showErrorModal(`Invalid formula: ${e.message}. Please check your expression.`, () => {
+                    currentFormulaParts = [];
+                    usedDiceInCurrentFormula.clear();
+                    showMindAttackModal();
+                    updateUI();
+                });
                 addGameLogMessage(`${attacker.name} submitted an invalid formula "${formula}": ${e.message}.`, 'error');
                 console.error("Math.js evaluation error:", e);
                 return; // Do not proceed
@@ -2221,14 +2339,13 @@
 
             // --- NEW GAMEPLAY RULE FOR MIND ATTACK (Retry Formula) ---
             if (result !== targetDie.value) {
-                messageEl.textContent = `${attacker.name}'s Mind Attack failed. Formula evaluated to ${result}, but target was ${targetDie.value}. Please try again!`;
                 addGameLogMessage(`${attacker.name}'s Mind Attack with formula ${formatMindAttackFormulaForLog(currentFormulaParts, attacker.dice)} resulted in ${result}, but target was ${targetDie.value}. Try again.`, 'error', true);
-                
-                // Force re-attempt: clear formula, keep selection, stay in mindAttackInput phase
-                currentFormulaParts = [];
-                usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on retry
-                renderMindAttackFormulaDisplay();
-                updateUI(); 
+                showErrorModal(`${attacker.name}'s Mind Attack failed! Formula evaluated to ${result}, but the target die was ${targetDie.value}. Please try again!`, () => {
+                    currentFormulaParts = [];
+                    usedDiceInCurrentFormula.clear();
+                    showMindAttackModal(); // Re-open mind attack modal to allow retry
+                    updateUI();
+                });
                 console.log("Mind attack failed: result mismatch. Player can retry.");
                 return; // DO NOT SWITCH TURN OR PROCEED WITH CAPTURE
             }
@@ -2439,6 +2556,37 @@
             console.log("renderMindAttackModalContent finished.");
         }
 
+        // --- NEW: Error Modal Functions ---
+        let errorCallback = null; // To store the function to call on "Try Again"
+
+        function showErrorModal(message, callback) {
+            console.log("showErrorModal called with message:", message);
+            errorMessageEl.textContent = message;
+            errorModalOverlay.classList.add('active');
+            errorCallback = callback; // Store the callback
+
+            // Remove any old listener first
+            btnErrorModalOk.removeEventListener('click', handleErrorModalOkClick);
+            // Add new listener
+            btnErrorModalOk.addEventListener('click', handleErrorModalOkClick);
+        }
+
+        function hideErrorModal() {
+            console.log("hideErrorModal called.");
+            errorModalOverlay.classList.remove('active');
+            errorCallback = null; // Clear the callback
+        }
+
+        function handleErrorModalOkClick() {
+            console.log("Error modal 'Try Again' clicked.");
+            playSound('click');
+            hideErrorModal();
+            if (errorCallback) {
+                errorCallback(); // Execute the stored callback
+            }
+        }
+
+
         // --- Keyboard Input for Mind Attack ---
         function handleMindAttackKeydown(event) {
             if (gamePhase !== 'mindAttackInput') return;
@@ -2453,14 +2601,14 @@
                 if (die) {
                     // NEW: Check if die is already used
                     if (usedDiceInCurrentFormula.has(die.id)) {
-                        messageEl.textContent = `Die ${die.label} is already used in the formula.`;
+                        showErrorModal(`Die ${die.label} is already used in the formula. Each die can only be used once.`, renderMindAttackModalContent);
                         console.warn(`Keyboard input: Attempted to use die ${die.label} multiple times.`);
                         return;
                     }
 
                     // Validation similar to click
                     if (ALPHA.includes(lastPart) || lastPart === ')') {
-                        messageEl.textContent = "Please add an operator (+-*/) before another die or closing parenthesis.";
+                        showErrorModal("Please add an operator (+-*/) before another die or closing parenthesis.", renderMindAttackModalContent);
                         console.warn("Keyboard input: Invalid die placement.");
                         return;
                     }
@@ -2469,7 +2617,7 @@
                     playSound('click');
                     messageEl.textContent = `Die ${key} added to formula.`;
                 } else {
-                    messageEl.textContent = `Die with label '${key}' not found in your pool.`;
+                    showErrorModal(`Die with label '${key}' not found in your pool.`, renderMindAttackModalContent);
                     console.warn("Keyboard input: Die not found for label:", key);
                 }
             }
@@ -2478,23 +2626,23 @@
                 // Validation similar to button clicks
                 if (currentFormulaParts.length === 0) {
                     if (OPERATORS.includes(key) || key === ')') {
-                        messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
+                        showErrorModal("Formula cannot start with an operator or closing parenthesis.", renderMindAttackModalContent);
                         console.warn("Keyboard input: Formula cannot start with operator/closing parenthesis.");
                         return;
                     }
                 } else {
                     if (OPERATORS.includes(key) && (lastPart === '(' || OPERATORS.includes(lastPart))) {
-                        messageEl.textContent = "Cannot have consecutive operators or an operator directly after an opening parenthesis.";
+                        showErrorModal("Cannot have consecutive operators or an operator directly after an opening parenthesis.", renderMindAttackModalContent);
                         console.warn("Keyboard input: Consecutive operators or operator after opening parenthesis.");
                         return;
                     }
                     if (key === '(' && ALPHA.includes(lastPart)) {
-                        messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
+                        showErrorModal("Please add an operator before an opening parenthesis if preceded by a die.", renderMindAttackModalContent);
                         console.warn("Keyboard input: Opening parenthesis after die.");
                         return;
                     }
                     if (key === ')' && (lastPart === '(' || OPERATORS.includes(lastPart))) {
-                        messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
+                        showErrorModal("Cannot close parenthesis immediately after an operator or empty parenthesis.", renderMindAttackModalContent);
                         return;
                     }
                 }
@@ -2531,7 +2679,7 @@
                     executeMindAttack();
                     return; // Prevent further updateUI if attack executed
                 } else {
-                    messageEl.textContent = "Formula is empty. Please build your formula.";
+                    showErrorModal("Formula is empty. Please build your formula.", renderMindAttackModalContent);
                     console.warn("Keyboard input: Attempted to submit empty formula.");
                 }
             } else {
@@ -2568,6 +2716,7 @@
                 gamePhase = 'selectAttackerForStrength'; // Transition to pick own die for Strength
                 updateUI();
             } else {
+                showErrorModal("Please first select an opponent's die to target, then choose your attack type.", updateUI);
                 console.warn("Strength Attack clicked in invalid phase or no target selected.");
             }
         });
@@ -2585,6 +2734,7 @@
                 updateUI(); // Update UI to show formula input container
                 renderMindAttackModalContent(); // Render content specific to modal
             } else {
+                showErrorModal("Please first select an opponent's die to target, then choose your attack type.", updateUI);
                 console.warn("Mind Attack clicked in invalid phase or no target selected.");
             }
         });
@@ -2617,23 +2767,23 @@
                 // Formula validation rules for buttons (operators/parentheses)
                 if (currentFormulaParts.length === 0) {
                     if (isOperator || value === ')') {
-                        messageEl.textContent = "Formula cannot start with an operator or closing parenthesis.";
+                        showErrorModal("Formula cannot start with an operator or closing parenthesis.", renderMindAttackModalContent);
                         console.warn("Formula button: Invalid start.");
                         return; // Prevent adding invalid part
                     }
                 } else {
                     if (isOperator && (lastPart === '(' || OPERATORS.includes(lastPart))) {
-                        messageEl.textContent = "Cannot have consecutive operators or an operator directly after an opening parenthesis.";
+                        showErrorModal("Cannot have consecutive operators or an operator directly after an opening parenthesis.", renderMindAttackModalContent);
                         console.warn("Formula button: Consecutive operators or operator after opening parenthesis.");
                         return; // Prevent adding invalid part
                     }
                     if (value === '(' && ALPHA.includes(lastPart)) { // Cannot place '(' immediately after a letter
-                        messageEl.textContent = "Please add an operator before an opening parenthesis if preceded by a die.";
+                        showErrorModal("Please add an operator before an opening parenthesis if preceded by a die.", renderMindAttackModalContent);
                         console.warn("Formula button: Opening parenthesis after die.");
                         return;
                     }
                     if (value === ')' && (lastPart === '(' || OPERATORS.includes(lastPart))) {
-                        messageEl.textContent = "Cannot close parenthesis immediately after an operator or empty parenthesis.";
+                        showErrorModal("Cannot close parenthesis immediately after an operator or empty parenthesis.", renderMindAttackModalContent);
                         return;
                     }
                 }
