@@ -1820,9 +1820,12 @@
                     controlsContainer.classList.add('focus-frame');
                     break;
                 case 'selectAttackerForStrength': // NEW PHASE: only for Strength Attack, player picks own die
-                    const targetDieObjForStrength = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
-                    if (currentAttacker && opponentPlayer && targetDieObjForStrength) {
-                        messageEl.textContent = `${currentAttacker.name}, choose one of your dice to attack ${opponentPlayer.name}'s ${targetDieObjForStrength.type.toUpperCase()} (${targetDieObjForStrength.value}).`;
+                    // FIX: Added null check for selectedTargetDie here as well
+                    if (selectedTargetDie) { 
+                        const targetDieObjForStrength = players[selectedTargetDie.playerIndex].dice.find(d => d.id === selectedTargetDie.dieId);
+                        if (currentAttacker && opponentPlayer && targetDieObjForStrength) {
+                            messageEl.textContent = `${currentAttacker.name}, choose one of your dice to attack ${opponentPlayer.name}'s ${targetDieObjForStrength.type.toUpperCase()} (${targetDieObjForStrength.value}).`;
+                        }
                     }
                     btnPass.disabled = false;
                     btnBack.disabled = false; // Can go back to chooseAttackType
@@ -1832,9 +1835,12 @@
                     // Strength and Mind Attack buttons are not relevant here, they are tied to selecting the attacker die
                     break;
                 case 'mindAttackInput': // Shared by both strength & mind attack execution
-                    const targetDieForFormula = opponentPlayer.dice.find(d => d.id === selectedTargetDie.dieId);
-                    if (currentAttacker && opponentPlayer && targetDieForFormula) {
-                         messageEl.textContent = `${currentAttacker.name}, build a formula to match ${opponentPlayer.name}'s ${targetDieForFormula.type.toUpperCase()} (${targetDieForFormula.value}).`;
+                    // FIX: Added null check for selectedTargetDie here as well
+                    if (selectedTargetDie) {
+                        const targetDieForFormula = opponentPlayer.dice.find(d => d.id === selectedTargetDie.dieId);
+                        if (currentAttacker && opponentPlayer && targetDieForFormula) {
+                            messageEl.textContent = `${currentAttacker.name}, build a formula to match ${opponentPlayer.name}'s ${targetDieForFormula.type.toUpperCase()} (${targetDieForFormula.value}).`;
+                        }
                     }
                     btnBack.disabled = false; // Allow back from formula input
                     // Frame the mind attack modal
@@ -2215,9 +2221,11 @@
 
                 messageEl.textContent = `${attacker.name}'s ${attackingDie.type.toUpperCase()} (${originalAttackerValue}) captured ${defender.name}'s ${targetDie.type.toUpperCase()} (${originalTargetValue})!`;
                 
-                checkWinCondition(); // Check if round ends
-                if (playing) { // 'playing' would be false only if a series winner was decided
-                    switchTurn(); // Only switch turn if round continues
+                const roundWon = checkWinCondition(); // Get return value
+                if (!roundWon && playing) { // Only switch turn if round wasn't won and game is still playing
+                    switchTurn();
+                } else if (!playing) {
+                    // Game is over (series win), do nothing, gameOverOverlay is shown elsewhere
                 }
             });
             console.log("executeStrengthAttack finished.");
@@ -2326,15 +2334,12 @@
                 const dieEl = (activePlayerIndex === 0 ? player0DicePoolEl : player1DicePoolEl).querySelector(`[data-die-id="${die.id}"]`);
                 if (dieEl) {
                     dieEl.classList.add('die-attacking-animation');
-                    animationPromises.push(new Promise(resolve => {
-                        setTimeout(() => {
-                            dieEl.classList.remove('die-attacking-animation');
-                            resolve();
-                        }, 600);
-                    }));
+                    playSound('reroll');
+                    setTimeout(() => { // Remove animation class after its duration
+                        dieEl.classList.remove('die-attacking-animation');
+                    }, 600); // Matches animation duration
                 }
             });
-            playSound('reroll');
             reRollSpecificDice(activePlayerIndex, diceUsedInFormulaForReroll); // Re-roll immediately
 
             // Wait for reroll animations to finish before continuing
@@ -2347,7 +2352,7 @@
                     currentFormulaParts = [];
                     usedDiceInCurrentFormula.clear();
                     showMindAttackModal(); // Re-open mind attack modal to allow retry
-                    updateUI();
+                    updateUI(); // Important to re-render UI elements
                 });
                 console.log("Mind attack failed: result mismatch. Player can retry.");
                 return; // DO NOT SWITCH TURN OR PROCEED WITH CAPTURE
@@ -2376,9 +2381,11 @@
             usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on success
             renderMindAttackFormulaDisplay();
             
-            checkWinCondition(); // Check if round ends
-            if (playing) { // 'playing' would be false only if a series winner was decided
-                switchTurn(); // Switches to selectTarget
+            const roundWon = checkWinCondition(); // Get return value
+            if (!roundWon && playing) { // Only switch turn if round wasn't won and game is still playing
+                switchTurn();
+            } else if (!playing) {
+                // Game is over (series win), do nothing
             }
             console.log("executeMindAttack finished.");
         }
@@ -2394,6 +2401,7 @@
             console.log("handlePass finished.");
         }
 
+        // Updated checkWinCondition to return true if a round is won, false otherwise
         function checkWinCondition() {
             console.log("checkWinCondition called.");
             const attacker = players[activePlayerIndex];
@@ -2409,11 +2417,16 @@
                 const winnerName = attacker.name;
                 const loserName = defender.name;
                 
-                // Keep 'playing' true as the game continues in rounds
-                // Do NOT show gameOverOverlay, as it's for series end
-
                 addGameLogMessage(`${winnerName} wins Round ${roundCounter}! All of ${loserName}'s dice captured. Current Score: ${players[0].name}: ${players[0].score}, ${players[1].name}: ${players[1].score}.`, 'win');
                 messageEl.textContent = `${winnerName} wins Round ${roundCounter}! Starting a new round...`;
+
+                // Clear visual elements immediately
+                // This ensures the dice pools are empty before the new dice are rolled
+                player0DicePoolEl.innerHTML = '';
+                player1DicePoolEl.innerHTML = '';
+                player0CapturedDiceEl.innerHTML = '';
+                player1CapturedDiceEl.innerHTML = '';
+
 
                 // Reset game state for a new round
                 players[0].dice = [];
@@ -2424,16 +2437,18 @@
                 selectedTargetDie = null;
                 currentFormulaParts = [];
                 usedDiceInCurrentFormula.clear(); // NEW: Clear used dice on round win
-                renderMindAttackFormulaDisplay();
-                // FIX: Removed updateUI() here, it will be called by determineFirstPlayer after delay
-                // updateUI(); 
-
+                renderMindAttackFormulaDisplay(); // Ensure formula display is cleared
+                
+                // No updateUI() here, as determineFirstPlayer will handle full re-render
+                
                 setTimeout(() => { // Small delay before starting next round
                     determineFirstPlayer(); // Start a new round with fresh dice pools
                 }, 2000); // 2 second delay
                 console.log("Round won. New round starting.");
+                return true; // Indicate that a round was won
             } else {
                 console.log("No round winner yet. Game continues.");
+                return false; // Indicate no round win
             }
         }
 
@@ -2495,6 +2510,10 @@
         function showMindAttackModal() {
             console.log("showMindAttackModal called.");
             mindAttackModalOverlay.classList.add('active');
+            // Disable clicks on elements behind the modal
+            gameContainer.style.pointerEvents = 'none'; 
+            controlsContainer.style.pointerEvents = 'none'; 
+
             renderMindAttackModalContent();
             // Attach keyboard listener when modal is active
             document.addEventListener('keydown', handleMindAttackKeydown);
@@ -2503,6 +2522,10 @@
         function hideMindAttackModal() {
             console.log("hideMindAttackModal called.");
             mindAttackModalOverlay.classList.remove('active');
+            // Re-enable clicks on elements behind the modal
+            gameContainer.style.pointerEvents = ''; 
+            controlsContainer.style.pointerEvents = ''; 
+
             // Remove keyboard listener when modal is hidden
             document.removeEventListener('keydown', handleMindAttackKeydown);
         }
